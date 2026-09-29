@@ -40,13 +40,24 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
 #overview.open{display:block}
 .overview-head{display:flex;align-items:center;justify-content:space-between;position:sticky;top:-44px;margin:-44px -50px 28px;padding:26px 50px 18px;background:#07101bf0;z-index:2}
 .overview-head h2{margin:0;font-size:25px;white-space:nowrap}
+.overview-head p{margin:5px 0 0;color:#b8c5d6;font-size:13px;white-space:nowrap}
+.overview-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
 .overview-head button{border:0;border-radius:999px;background:white;color:#14243a;padding:10px 16px;font-weight:800;cursor:pointer;white-space:nowrap}
+.overview-head #edit-hidden{background:#203a58;color:white;border:1px solid #ffffff30}
+.overview-head #edit-hidden.active{background:#ffcf5a;color:#172536;border-color:#ffcf5a}
+.overview-head #reset-hidden{display:none;background:#b73535;color:white}
+#overview.editing #reset-hidden{display:block}
 #overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px}
-.overview-item{display:block;border:1px solid #ffffff20;border-radius:12px;background:#ffffff0d;color:white;text-align:left;padding:0;overflow:hidden;cursor:pointer}
+.overview-item{position:relative;display:block;border:1px solid #ffffff20;border-radius:12px;background:#ffffff0d;color:white;text-align:left;padding:0;overflow:hidden;cursor:pointer}
 .overview-item:hover,.overview-item:focus-visible{border-color:#fff8;transform:translateY(-2px);outline:none}
 .overview-item img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:white}
-.overview-item span{display:block;padding:10px 12px 12px;font-size:13px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.overview-item .item-label{display:block;padding:10px 12px 12px;font-size:13px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .overview-item b{margin-right:7px;color:#8ec5ff;font-family:Arial,sans-serif}
+.overview-item.is-hidden{display:none}
+#overview.editing .overview-item.is-hidden{display:block;opacity:.48;border-color:#ffcf5a;filter:grayscale(.65)}
+.overview-item .hidden-badge{display:none;position:absolute;right:9px;top:9px;padding:6px 9px;border-radius:999px;background:#b73535;color:white;font-size:12px;font-weight:800;box-shadow:0 3px 12px #0008}
+#overview.editing .overview-item.is-hidden .hidden-badge{display:block}
+#overview.editing .overview-item:not(.is-hidden)::after{content:"표시 중";position:absolute;right:9px;top:9px;padding:6px 9px;border-radius:999px;background:#147a60;color:white;font-size:12px;font-weight:800;box-shadow:0 3px 12px #0008}
 #toast{position:fixed;right:18px;bottom:18px;z-index:50;padding:10px 13px;border-radius:9px;color:white;background:#081321e8;font-size:13px;opacity:0;transform:translateY(8px);transition:.18s;pointer-events:none;white-space:nowrap}
 #toast.show{opacity:1;transform:none}
 :fullscreen #controls,:fullscreen #hotzone{display:none!important}
@@ -57,7 +68,8 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
   #viewport{position:static;display:block;overflow:visible}
   #deck{width:16in;height:auto;aspect-ratio:auto;overflow:visible;transform:none;box-shadow:none;background:white}
   .slide{position:relative;display:block;width:16in;height:7in;opacity:1!important;transform:none!important;page-break-after:always;break-after:page;pointer-events:auto}
-  .slide:last-child{page-break-after:auto;break-after:auto}
+  .slide.is-hidden{display:none!important}
+  .slide.last-visible{page-break-after:auto;break-after:auto}
   #controls,#hotzone,#overview,#toast{display:none!important}
 }
 </style>
@@ -1607,7 +1619,14 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
   <button id="fullscreen" type="button">전체 화면</button>
 </nav>
 <aside id="overview" aria-label="슬라이드 목록">
-  <div class="overview-head"><h2>슬라이드 목록</h2><button id="close-overview" type="button">닫기</button></div>
+  <div class="overview-head">
+    <div><h2 id="overview-title">슬라이드 목록</h2><p id="overview-note">화면을 선택하면 해당 슬라이드로 이동합니다.</p></div>
+    <div class="overview-actions">
+      <button id="edit-hidden" type="button">숨김 편집</button>
+      <button id="reset-hidden" type="button">숨김 전체 해제</button>
+      <button id="close-overview" type="button">닫기</button>
+    </div>
+  </div>
   <div id="overview-grid"></div>
 </aside>
 <div id="toast">Enter·Space·클릭 다음　← 이전　M 목록　F 전체 화면</div>
@@ -1617,18 +1636,76 @@ const deck=document.querySelector('#deck');
 const counter=document.querySelector('#counter');
 const overview=document.querySelector('#overview');
 const grid=document.querySelector('#overview-grid');
+const overviewTitle=document.querySelector('#overview-title');
+const overviewNote=document.querySelector('#overview-note');
+const editHiddenButton=document.querySelector('#edit-hidden');
+const resetHiddenButton=document.querySelector('#reset-hidden');
+const STORAGE_KEY='dongpae-admission-hidden-slides-v1';
+const EDIT_PASSWORD='9122';
 let current=0;
 let busy=false;
+let editMode=false;
+let hidden=loadHidden();
+
+function loadHidden(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
+    const valid=Array.isArray(saved)?saved.filter(index=>Number.isInteger(index)&&index>=0&&index<slides.length):[];
+    return new Set(valid.length<slides.length?valid:[]);
+  }catch(error){return new Set()}
+}
+
+function saveHidden(){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify([...hidden].sort((a,b)=>a-b)))}
+  catch(error){showToast('이 브라우저에서는 숨김 설정을 저장할 수 없습니다.')}
+}
+
+function visibleIndexes(){return slides.map((_,index)=>index).filter(index=>!hidden.has(index))}
+
+function showToast(message){
+  const toast=document.querySelector('#toast');
+  toast.textContent=message;
+  toast.classList.add('show');
+  clearTimeout(showToast.timer);
+  showToast.timer=setTimeout(()=>toast.classList.remove('show'),2600);
+}
 
 function fitDeck(){
   const scale=Math.min(innerWidth/1600,innerHeight/700);
   document.documentElement.style.setProperty('--scale',String(scale));
 }
 
-function updateCounter(){counter.textContent=`${current+1} / ${slides.length}`}
+function updateCounter(){
+  const visible=visibleIndexes();
+  const position=visible.indexOf(current);
+  counter.textContent=position>=0?`${position+1} / ${visible.length}`:`- / ${visible.length}`;
+}
+
+function updateProgress(){
+  const visible=visibleIndexes();
+  slides.forEach(slide=>slide.querySelector('.page-progress i').style.width='0%');
+  visible.forEach((index,position)=>{
+    slides[index].querySelector('.page-progress i').style.width=`${(position+1)/visible.length*100}%`;
+  });
+}
+
+function applyHiddenState(){
+  slides.forEach((slide,index)=>{
+    const isHidden=hidden.has(index);
+    slide.classList.toggle('is-hidden',isHidden);
+    slide.setAttribute('aria-hidden',String(isHidden));
+  });
+  slides.forEach(slide=>slide.classList.remove('last-visible'));
+  const visible=visibleIndexes();
+  if(visible.length)slides[visible.at(-1)].classList.add('last-visible');
+  [...grid.children].forEach((button,index)=>button.classList.toggle('is-hidden',hidden.has(index)));
+  updateCounter();
+  updateProgress();
+  overviewTitle.textContent=editMode?`슬라이드 숨김 편집 (${hidden.size}쪽 숨김)`:`슬라이드 목록 (${visible.length}쪽)`;
+}
 
 function show(index,direction=1,instant=false){
-  if(index<0||index>=slides.length||index===current||busy)return;
+  if(index<0||index>=slides.length||hidden.has(index)||index===current||(!instant&&busy))return;
   busy=!instant;
   const previous=slides[current];
   const incoming=slides[index];
@@ -1643,10 +1720,70 @@ function show(index,direction=1,instant=false){
   else setTimeout(()=>{previous.classList.remove('leaving');busy=false},300);
 }
 
-function forward(){if(!overview.classList.contains('open'))show(current+1,1)}
-function backward(){if(!overview.classList.contains('open'))show(current-1,-1)}
+function nextVisible(from,direction){
+  for(let index=from+direction;index>=0&&index<slides.length;index+=direction){
+    if(!hidden.has(index))return index;
+  }
+  return -1;
+}
+
+function forward(){
+  if(overview.classList.contains('open'))return;
+  const index=nextVisible(current,1);
+  if(index>=0)show(index,1);
+}
+
+function backward(){
+  if(overview.classList.contains('open'))return;
+  const index=nextVisible(current,-1);
+  if(index>=0)show(index,-1);
+}
+
 function toggleFullscreen(){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}
-function closeOverview(){overview.classList.remove('open');document.querySelector('#list').focus()}
+
+function setEditMode(enabled){
+  editMode=enabled;
+  overview.classList.toggle('editing',enabled);
+  editHiddenButton.classList.toggle('active',enabled);
+  editHiddenButton.textContent=enabled?'편집 종료':'숨김 편집';
+  overviewNote.textContent=enabled?'화면을 선택하여 숨기거나 다시 표시합니다.':'화면을 선택하면 해당 슬라이드로 이동합니다.';
+  applyHiddenState();
+}
+
+function toggleEditMode(){
+  if(editMode){setEditMode(false);return}
+  const password=prompt('숨김 편집 비밀번호를 입력하세요.');
+  if(password===null)return;
+  if(password!==EDIT_PASSWORD){showToast('비밀번호가 올바르지 않습니다.');return}
+  setEditMode(true);
+  showToast('숨길 화면을 선택하세요. 다시 선택하면 표시됩니다.');
+}
+
+function toggleHidden(index){
+  const hiding=!hidden.has(index);
+  if(hiding&&visibleIndexes().length===1){showToast('마지막 화면은 숨길 수 없습니다.');return}
+  if(hiding)hidden.add(index);else hidden.delete(index);
+  if(hiding&&index===current){
+    const fallback=nextVisible(index,1)>=0?nextVisible(index,1):nextVisible(index,-1);
+    busy=false;
+    if(fallback>=0)show(fallback,fallback>index?1:-1,true);
+  }
+  saveHidden();
+  applyHiddenState();
+  showToast(`${index+1}번 화면을 ${hiding?'숨겼습니다.':'다시 표시합니다.'}`);
+}
+
+function resetHidden(){
+  if(!hidden.size){showToast('숨긴 화면이 없습니다.');return}
+  if(!confirm('숨긴 화면을 모두 다시 표시할까요?'))return;
+  hidden.clear();
+  saveHidden();
+  applyHiddenState();
+  showToast('모든 화면을 다시 표시했습니다.');
+}
+
+function closeOverview(){setEditMode(false);overview.classList.remove('open');document.querySelector('#list').focus()}
+
 function openOverview(){
   if(!grid.children.length){
     slides.forEach((slide,index)=>{
@@ -1657,20 +1794,30 @@ function openOverview(){
       thumb.src=slide.querySelector('img').src;
       thumb.alt='';
       const label=document.createElement('span');
+      label.className='item-label';
       label.innerHTML=`<b>${String(index+1).padStart(3,'0')}</b>${slide.dataset.title}`;
-      button.append(thumb,label);
-      button.addEventListener('click',()=>{overview.classList.remove('open');show(index,index>=current?1:-1,true)});
+      const badge=document.createElement('span');
+      badge.className='hidden-badge';
+      badge.textContent='숨김';
+      button.append(thumb,label,badge);
+      button.addEventListener('click',()=>{
+        if(editMode){toggleHidden(index);return}
+        overview.classList.remove('open');
+        show(index,index>=current?1:-1,true);
+      });
       grid.append(button);
     });
   }
+  setEditMode(false);
+  applyHiddenState();
   overview.classList.add('open');
   grid.children[current]?.scrollIntoView({block:'center'});
 }
 
-slides[0].classList.add('active');
-const start=Math.min(slides.length-1,Math.max(0,(Number(location.hash.slice(1))||1)-1));
-if(start){slides[0].classList.remove('active');current=start;slides[current].classList.add('active')}
-updateCounter();fitDeck();addEventListener('resize',fitDeck);
+const requested=Math.min(slides.length-1,Math.max(0,(Number(location.hash.slice(1))||1)-1));
+current=hidden.has(requested)?visibleIndexes()[0]:requested;
+slides[current].classList.add('active');
+applyHiddenState();fitDeck();addEventListener('resize',fitDeck);
 
 deck.addEventListener('click',forward);
 document.querySelector('#prev').addEventListener('click',backward);
@@ -1678,6 +1825,8 @@ document.querySelector('#next').addEventListener('click',forward);
 document.querySelector('#list').addEventListener('click',openOverview);
 document.querySelector('#fullscreen').addEventListener('click',toggleFullscreen);
 document.querySelector('#close-overview').addEventListener('click',closeOverview);
+editHiddenButton.addEventListener('click',toggleEditMode);
+resetHiddenButton.addEventListener('click',resetHidden);
 
 document.addEventListener('keydown',event=>{
   if(overview.classList.contains('open')){
@@ -1686,12 +1835,12 @@ document.addEventListener('keydown',event=>{
   }
   if(['Enter',' ','ArrowRight','PageDown'].includes(event.key)){event.preventDefault();forward()}
   else if(['ArrowLeft','PageUp','Backspace'].includes(event.key)){event.preventDefault();backward()}
-  else if(event.key==='Home'){event.preventDefault();show(0,-1)}
-  else if(event.key==='End'){event.preventDefault();show(slides.length-1,1)}
+  else if(event.key==='Home'){event.preventDefault();show(visibleIndexes()[0],-1)}
+  else if(event.key==='End'){event.preventDefault();show(visibleIndexes().at(-1),1)}
   else if(event.key.toLowerCase()==='m'){event.preventDefault();openOverview()}
   else if(event.key.toLowerCase()==='f'){event.preventDefault();toggleFullscreen()}
   else if(event.key.toLowerCase()==='h'){
-    const toast=document.querySelector('#toast');toast.classList.add('show');setTimeout(()=>toast.classList.remove('show'),2600);
+    showToast('Enter·Space·클릭 다음　← 이전　M 목록　F 전체 화면');
   }
 });
 </script>
