@@ -49,6 +49,9 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
 #hotzone:hover+#controls,#controls:hover,#controls:focus-within{opacity:1;transform:translate(-50%,0)}
 #controls button{min-width:40px;height:34px;border:0;border-radius:999px;padding:0 12px;color:white;background:#ffffff0e;font:700 13px/1 "Malgun Gothic",sans-serif;white-space:nowrap;cursor:pointer}
 #controls button:hover,#controls button:focus-visible{background:#ffffff25;outline:none}
+#controls #manage-pages{background:#176b54;color:#fff}
+#page-manager-launcher{position:fixed;right:14px;top:14px;z-index:22;height:38px;border:1px solid #ffffff55;border-radius:999px;padding:0 15px;background:#0b5f4bd9;color:white;box-shadow:0 5px 18px #0006;font:800 13px/1 "Malgun Gothic",sans-serif;cursor:pointer;opacity:.72;transition:.18s}
+#page-manager-launcher:hover,#page-manager-launcher:focus-visible{opacity:1;transform:translateY(-1px);outline:none}
 #counter{min-width:82px;text-align:center;font:700 13px/1 Arial,sans-serif;font-variant-numeric:tabular-nums;white-space:nowrap}
 #cover-editor{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:24px;background:#06101cdc;backdrop-filter:blur(10px);z-index:60}
 #cover-editor.open{display:flex}
@@ -65,29 +68,61 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
 #save-cover-info{background:#1f6eaa;color:white}
 #overview{position:fixed;inset:0;display:none;background:#07101bea;color:white;z-index:40;padding:44px 50px;overflow:auto;backdrop-filter:blur(10px)}
 #overview.open{display:block}
-.overview-head{display:flex;align-items:center;justify-content:space-between;position:sticky;top:-44px;margin:-44px -50px 28px;padding:26px 50px 18px;background:#07101bf0;z-index:2}
+.overview-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;position:sticky;top:-44px;margin:-44px -50px 28px;padding:26px 50px 18px;background:#07101bf0;z-index:2}
 .overview-head h2{margin:0;font-size:25px;white-space:nowrap}
 .overview-head p{margin:5px 0 0;color:#b8c5d6;font-size:13px;white-space:nowrap}
-.overview-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.overview-actions{display:flex;flex:1 1 720px;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
 .overview-head button{border:0;border-radius:999px;background:white;color:#14243a;padding:10px 16px;font-weight:800;cursor:pointer;white-space:nowrap}
 .overview-head #edit-hidden{background:#203a58;color:white;border:1px solid #ffffff30}
 .overview-head #edit-hidden.active{background:#ffcf5a;color:#172536;border-color:#ffcf5a}
+.overview-head #edit-order{background:#203a58;color:white;border:1px solid #ffffff30}
+.overview-head #edit-order.active{background:#8ec5ff;color:#10263e;border-color:#8ec5ff}
+.overview-head #edit-pages{background:#203a58;color:white;border:1px solid #ffffff30}
+.overview-head #edit-pages.active{background:#8fd9bb;color:#102d26;border-color:#8fd9bb}
 .overview-head #reset-hidden{display:none;background:#b73535;color:white}
+.overview-head #reset-order{display:none;background:#285f91;color:white}
+.overview-head #add-pages,.overview-head #restore-deleted,.overview-head #save-edited-file{display:none}
+.overview-head #add-pages{background:#167052;color:white}
+.overview-head #restore-deleted{background:#8a3b3b;color:white}
+.overview-head #save-edited-file{background:#2b5e92;color:white}
 #overview.editing #reset-hidden{display:block}
+#overview.reordering #reset-order{display:block}
+#overview.page-editing #add-pages,#overview.page-editing #restore-deleted,#overview.page-editing #save-edited-file{display:block}
 #overview-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:18px}
-.overview-item{position:relative;display:block;border:1px solid #ffffff20;border-radius:12px;background:#ffffff0d;color:white;text-align:left;padding:0;overflow:hidden;cursor:pointer}
+.overview-item{position:relative;display:block;border:1px solid #ffffff20;border-radius:12px;background:#ffffff0d;color:white;text-align:left;padding:0;overflow:hidden;cursor:pointer;transition:border-color .16s,transform .16s,opacity .16s}
 .overview-item:hover,.overview-item:focus-visible{border-color:#fff8;transform:translateY(-2px);outline:none}
 .overview-item img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:white}
 .overview-item .item-label{display:block;padding:10px 12px 12px;font-size:13px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .overview-item b{margin-right:7px;color:#8ec5ff;font-family:Arial,sans-serif}
 .overview-item.is-hidden{display:none}
 #overview.editing .overview-item.is-hidden{display:block;opacity:.48;border-color:#ffcf5a;filter:grayscale(.65)}
+#overview.page-editing .overview-item.is-hidden{display:block;opacity:.65;border-color:#ffcf5a}
+#overview.reordering .overview-item{cursor:grab}
+#overview.reordering .overview-item:active{cursor:grabbing}
+#overview.reordering .overview-item.is-hidden{display:block;opacity:.52;border-color:#ffcf5a;filter:grayscale(.65)}
+.overview-item.dragging{opacity:.28!important;transform:scale(.97)!important}
+.overview-item.drag-target{border-color:#8ec5ff!important;box-shadow:0 0 0 3px #8ec5ff55}
+.overview-item.is-deleted{display:none!important}
+#overview.page-editing .overview-item.is-deleted{display:block!important;opacity:.45;border-color:#ff7d7d;filter:grayscale(.8)}
 .overview-item .hidden-badge{display:none;position:absolute;right:9px;top:9px;padding:6px 9px;border-radius:999px;background:#b73535;color:white;font-size:12px;font-weight:800;box-shadow:0 3px 12px #0008}
-#overview.editing .overview-item.is-hidden .hidden-badge{display:block}
+#overview.editing .overview-item.is-hidden .hidden-badge,#overview.reordering .overview-item.is-hidden .hidden-badge,#overview.page-editing .overview-item.is-hidden .hidden-badge{display:block}
 #overview.editing .overview-item:not(.is-hidden)::after{content:"표시 중";position:absolute;right:9px;top:9px;padding:6px 9px;border-radius:999px;background:#147a60;color:white;font-size:12px;font-weight:800;box-shadow:0 3px 12px #0008}
+.overview-item .deleted-badge{display:none;position:absolute;left:9px;top:9px;padding:6px 9px;border-radius:999px;background:#b73535;color:white;font-size:12px;font-weight:800;box-shadow:0 3px 12px #0008}
+#overview.page-editing .overview-item.is-deleted .deleted-badge{display:block}
+.overview-item .custom-badge{display:none;position:absolute;left:9px;top:9px;padding:6px 9px;border-radius:999px;background:#166b91;color:white;font-size:12px;font-weight:800;box-shadow:0 3px 12px #0008}
+.overview-item.is-custom:not(.is-deleted) .custom-badge{display:block}
+.reorder-controls{display:none;position:absolute;left:8px;right:8px;bottom:42px;align-items:center;justify-content:space-between;gap:7px;padding:7px;border-radius:10px;background:#07101be8;box-shadow:0 4px 16px #0008}
+#overview.reordering .reorder-controls{display:flex}
+.reorder-controls button{flex:1;height:34px;border:1px solid #ffffff32;border-radius:8px;background:#173552;color:white;font:800 12px/1 "Malgun Gothic",sans-serif;cursor:pointer}
+.reorder-controls button:hover,.reorder-controls button:focus-visible{background:#2d6c9f;outline:none}
+.page-controls{display:none;position:absolute;left:8px;right:8px;bottom:42px;padding:7px;border-radius:10px;background:#07101be8;box-shadow:0 4px 16px #0008}
+#overview.page-editing .page-controls{display:block}
+.page-controls button{width:100%;height:34px;border:1px solid #ffffff32;border-radius:8px;background:#a33d3d;color:white;font:800 12px/1 "Malgun Gothic",sans-serif;cursor:pointer}
+#overview.page-editing .overview-item.is-deleted .page-controls button{background:#167052}
+.page-controls button:hover,.page-controls button:focus-visible{filter:brightness(1.12);outline:none}
 #toast{position:fixed;right:18px;bottom:18px;z-index:50;padding:10px 13px;border-radius:9px;color:white;background:#081321e8;font-size:13px;opacity:0;transform:translateY(8px);transition:.18s;pointer-events:none;white-space:nowrap}
 #toast.show{opacity:1;transform:none}
-:fullscreen #controls,:fullscreen #hotzone{display:none!important}
+:fullscreen #controls,:fullscreen #hotzone,:fullscreen #page-manager-launcher{display:none!important}
 @media (prefers-reduced-motion:reduce){.slide,#toast{transition:none}}
 @media print{
   @page{size:16in 9in;margin:0}
@@ -96,13 +131,14 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
   #deck{width:16in;height:auto;aspect-ratio:auto;overflow:visible;transform:none;box-shadow:none;background:white}
   .slide{position:relative;display:block;width:16in;height:9in;opacity:1!important;transform:none!important;page-break-after:always;break-after:page;pointer-events:auto}
   .slide.is-hidden{display:none!important}
+  .slide.is-deleted{display:none!important}
   .slide.last-visible{page-break-after:auto;break-after:auto}
-  #controls,#hotzone,#overview,#toast,#cover-editor{display:none!important}
+  #controls,#hotzone,#overview,#toast,#cover-editor,#page-manager-launcher{display:none!important}
 }
 </style>
 </head>
 <body class="layout-standard">
-<div id="viewport"><main id="deck" aria-live="polite"><section class="slide" data-index="1" data-title="동패고를 만나면 꿈이 이루어집니다" style="--accent:#2f74b8">
+<div id="viewport"><main id="deck" aria-live="polite"><section class="slide" data-index="1" data-slide-id="0" data-title="동패고를 만나면 꿈이 이루어집니다" style="--accent:#2f74b8">
   <div class="standard-meta" aria-hidden="true"><span>01　학교 소개</span><span>001 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">01</span>
@@ -121,7 +157,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:0.83333%"></i></div>
-</section><section class="slide" data-index="2" data-title="1부 학교 소개" style="--accent:#2f74b8">
+</section><section class="slide" data-index="2" data-slide-id="1" data-title="1부 학교 소개" style="--accent:#2f74b8">
   <div class="standard-meta" aria-hidden="true"><span>01　학교 소개</span><span>002 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">01</span>
@@ -135,7 +171,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:1.66667%"></i></div>
-</section><section class="slide" data-index="3" data-title="동패고의 시작과 성장" style="--accent:#2f74b8">
+</section><section class="slide" data-index="3" data-slide-id="2" data-title="동패고의 시작과 성장" style="--accent:#2f74b8">
   <div class="standard-meta" aria-hidden="true"><span>01　학교 소개</span><span>003 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">01</span>
@@ -149,7 +185,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:2.50000%"></i></div>
-</section><section class="slide" data-index="4" data-title="동패고 교육 비전" style="--accent:#2f74b8">
+</section><section class="slide" data-index="4" data-slide-id="3" data-title="동패고 교육 비전" style="--accent:#2f74b8">
   <div class="standard-meta" aria-hidden="true"><span>01　학교 소개</span><span>004 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">01</span>
@@ -163,7 +199,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:3.33333%"></i></div>
-</section><section class="slide" data-index="5" data-title="학교 현황: 학생과 교직원" style="--accent:#2f74b8">
+</section><section class="slide" data-index="5" data-slide-id="4" data-title="학교 현황: 학생과 교직원" style="--accent:#2f74b8">
   <div class="standard-meta" aria-hidden="true"><span>01　학교 소개</span><span>005 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">01</span>
@@ -177,7 +213,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:4.16667%"></i></div>
-</section><section class="slide" data-index="6" data-title="학교 현황: 교과별 교사" style="--accent:#2f74b8">
+</section><section class="slide" data-index="6" data-slide-id="5" data-title="학교 현황: 교과별 교사" style="--accent:#2f74b8">
   <div class="standard-meta" aria-hidden="true"><span>01　학교 소개</span><span>006 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">01</span>
@@ -191,7 +227,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:5.00000%"></i></div>
-</section><section class="slide" data-index="7" data-title="2부 동패고의 성장 원동력" style="--accent:#27836f">
+</section><section class="slide" data-index="7" data-slide-id="6" data-title="2부 동패고의 성장 원동력" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>007 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -205,7 +241,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:5.83333%"></i></div>
-</section><section class="slide" data-index="8" data-title="좋은 수업 분위기" style="--accent:#27836f">
+</section><section class="slide" data-index="8" data-slide-id="7" data-title="좋은 수업 분위기" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>008 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -219,7 +255,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:6.66667%"></i></div>
-</section><section class="slide" data-index="9" data-title="야간 자율학습 운영" style="--accent:#27836f">
+</section><section class="slide" data-index="9" data-slide-id="8" data-title="야간 자율학습 운영" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>009 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -233,7 +269,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:7.50000%"></i></div>
-</section><section class="slide" data-index="10" data-title="최적의 시설과 학습환경" style="--accent:#27836f">
+</section><section class="slide" data-index="10" data-slide-id="9" data-title="최적의 시설과 학습환경" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>010 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -247,7 +283,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:8.33333%"></i></div>
-</section><section class="slide" data-index="11" data-title="학습 시설" style="--accent:#27836f">
+</section><section class="slide" data-index="11" data-slide-id="10" data-title="학습 시설" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>011 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -261,7 +297,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:9.16667%"></i></div>
-</section><section class="slide" data-index="12" data-title="학교 정보 안내 시설" style="--accent:#27836f">
+</section><section class="slide" data-index="12" data-slide-id="11" data-title="학교 정보 안내 시설" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>012 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -275,7 +311,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:10.00000%"></i></div>
-</section><section class="slide" data-index="13" data-title="학생 중심 학습 공간" style="--accent:#27836f">
+</section><section class="slide" data-index="13" data-slide-id="12" data-title="학생 중심 학습 공간" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>013 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -289,7 +325,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:10.83333%"></i></div>
-</section><section class="slide" data-index="14" data-title="학생 휴게 공간" style="--accent:#27836f">
+</section><section class="slide" data-index="14" data-slide-id="13" data-title="학생 휴게 공간" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>014 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -303,7 +339,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:11.66667%"></i></div>
-</section><section class="slide" data-index="15" data-title="고교학점제 공간 조성" style="--accent:#27836f">
+</section><section class="slide" data-index="15" data-slide-id="14" data-title="고교학점제 공간 조성" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>015 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -317,7 +353,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:12.50000%"></i></div>
-</section><section class="slide" data-index="16" data-title="2022 개정 교육과정" style="--accent:#27836f">
+</section><section class="slide" data-index="16" data-slide-id="15" data-title="2022 개정 교육과정" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>016 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -331,7 +367,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:13.33333%"></i></div>
-</section><section class="slide" data-index="17" data-title="학생 중심 교육과정" style="--accent:#27836f">
+</section><section class="slide" data-index="17" data-slide-id="16" data-title="학생 중심 교육과정" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>017 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -345,7 +381,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:14.16667%"></i></div>
-</section><section class="slide" data-index="18" data-title="학생 주도 맞춤형 역량 강화" style="--accent:#27836f">
+</section><section class="slide" data-index="18" data-slide-id="17" data-title="학생 주도 맞춤형 역량 강화" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>018 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -359,7 +395,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:15.00000%"></i></div>
-</section><section class="slide" data-index="19" data-title="학생 핵심 역량" style="--accent:#27836f">
+</section><section class="slide" data-index="19" data-slide-id="18" data-title="학생 핵심 역량" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>019 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -373,7 +409,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:15.83333%"></i></div>
-</section><section class="slide" data-index="20" data-title="수업 활동 안내" style="--accent:#27836f">
+</section><section class="slide" data-index="20" data-slide-id="19" data-title="수업 활동 안내" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>020 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -387,7 +423,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:16.66667%"></i></div>
-</section><section class="slide" data-index="21" data-title="학생 참여형 수업" style="--accent:#27836f">
+</section><section class="slide" data-index="21" data-slide-id="20" data-title="학생 참여형 수업" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>021 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -401,7 +437,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:17.50000%"></i></div>
-</section><section class="slide" data-index="22" data-title="정치와 법 수업 사례" style="--accent:#27836f">
+</section><section class="slide" data-index="22" data-slide-id="21" data-title="정치와 법 수업 사례" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>022 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -415,7 +451,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:18.33333%"></i></div>
-</section><section class="slide" data-index="23" data-title="사회과학 동아리 사례" style="--accent:#27836f">
+</section><section class="slide" data-index="23" data-slide-id="22" data-title="사회과학 동아리 사례" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>023 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -429,7 +465,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:19.16667%"></i></div>
-</section><section class="slide" data-index="24" data-title="기초학력 보장 프로그램" style="--accent:#27836f">
+</section><section class="slide" data-index="24" data-slide-id="23" data-title="기초학력 보장 프로그램" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>024 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -443,7 +479,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:20.00000%"></i></div>
-</section><section class="slide" data-index="25" data-title="최소 성취수준 보장지도" style="--accent:#27836f">
+</section><section class="slide" data-index="25" data-slide-id="24" data-title="최소 성취수준 보장지도" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>025 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -457,7 +493,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:20.83333%"></i></div>
-</section><section class="slide" data-index="26" data-title="학력향상 프로그램" style="--accent:#27836f">
+</section><section class="slide" data-index="26" data-slide-id="25" data-title="학력향상 프로그램" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>026 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -471,7 +507,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:21.66667%"></i></div>
-</section><section class="slide" data-index="27" data-title="진로심화 프로그램" style="--accent:#27836f">
+</section><section class="slide" data-index="27" data-slide-id="26" data-title="진로심화 프로그램" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>027 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -485,7 +521,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:22.50000%"></i></div>
-</section><section class="slide" data-index="28" data-title="대입 프로그램" style="--accent:#27836f">
+</section><section class="slide" data-index="28" data-slide-id="27" data-title="대입 프로그램" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>028 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -499,7 +535,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:23.33333%"></i></div>
-</section><section class="slide" data-index="29" data-title="또래 멘토링" style="--accent:#27836f">
+</section><section class="slide" data-index="29" data-slide-id="28" data-title="또래 멘토링" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>029 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -513,7 +549,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:24.16667%"></i></div>
-</section><section class="slide" data-index="30" data-title="학생 성장 시스템" style="--accent:#27836f">
+</section><section class="slide" data-index="30" data-slide-id="29" data-title="학생 성장 시스템" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>030 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -527,7 +563,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:25.00000%"></i></div>
-</section><section class="slide" data-index="31" data-title="세부능력 및 특기사항 기록" style="--accent:#27836f">
+</section><section class="slide" data-index="31" data-slide-id="30" data-title="세부능력 및 특기사항 기록" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>031 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -541,7 +577,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:25.83333%"></i></div>
-</section><section class="slide" data-index="32" data-title="학생부 종합전형 프로그램" style="--accent:#27836f">
+</section><section class="slide" data-index="32" data-slide-id="31" data-title="학생부 종합전형 프로그램" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>032 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -555,7 +591,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:26.66667%"></i></div>
-</section><section class="slide" data-index="33" data-title="사가독서 프로그램" style="--accent:#27836f">
+</section><section class="slide" data-index="33" data-slide-id="32" data-title="사가독서 프로그램" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>033 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -569,7 +605,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:27.50000%"></i></div>
-</section><section class="slide" data-index="34" data-title="사가독서 활동" style="--accent:#27836f">
+</section><section class="slide" data-index="34" data-slide-id="33" data-title="사가독서 활동" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>034 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -583,7 +619,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:28.33333%"></i></div>
-</section><section class="slide" data-index="35" data-title="교과 비교과 진로 통합 운영" style="--accent:#27836f">
+</section><section class="slide" data-index="35" data-slide-id="34" data-title="교과 비교과 진로 통합 운영" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>035 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -597,7 +633,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:29.16667%"></i></div>
-</section><section class="slide" data-index="36" data-title="꿈과 끼를 살리는 행사" style="--accent:#27836f">
+</section><section class="slide" data-index="36" data-slide-id="35" data-title="꿈과 끼를 살리는 행사" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>036 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -611,7 +647,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:30.00000%"></i></div>
-</section><section class="slide" data-index="37" data-title="학생 활동 연간 계획" style="--accent:#27836f">
+</section><section class="slide" data-index="37" data-slide-id="36" data-title="학생 활동 연간 계획" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>037 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -625,7 +661,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:30.83333%"></i></div>
-</section><section class="slide" data-index="38" data-title="학생 활동 연간 계획" style="--accent:#27836f">
+</section><section class="slide" data-index="38" data-slide-id="37" data-title="학생 활동 연간 계획" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>038 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -639,7 +675,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:31.66667%"></i></div>
-</section><section class="slide" data-index="39" data-title="학생 활동 연간 계획" style="--accent:#27836f">
+</section><section class="slide" data-index="39" data-slide-id="38" data-title="학생 활동 연간 계획" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>039 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -653,7 +689,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:32.50000%"></i></div>
-</section><section class="slide" data-index="40" data-title="학생 활동 연간 계획" style="--accent:#27836f">
+</section><section class="slide" data-index="40" data-slide-id="39" data-title="학생 활동 연간 계획" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>040 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -667,7 +703,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:33.33333%"></i></div>
-</section><section class="slide" data-index="41" data-title="수학 과학 활동" style="--accent:#27836f">
+</section><section class="slide" data-index="41" data-slide-id="40" data-title="수학 과학 활동" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>041 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -681,7 +717,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:34.16667%"></i></div>
-</section><section class="slide" data-index="42" data-title="학생이 주도하는 과학실" style="--accent:#27836f">
+</section><section class="slide" data-index="42" data-slide-id="41" data-title="학생이 주도하는 과학실" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>042 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -695,7 +731,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:35.00000%"></i></div>
-</section><section class="slide" data-index="43" data-title="발명 아이디어 활동" style="--accent:#27836f">
+</section><section class="slide" data-index="43" data-slide-id="42" data-title="발명 아이디어 활동" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>043 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -709,7 +745,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:35.83333%"></i></div>
-</section><section class="slide" data-index="44" data-title="광물 암석과 천체 관측" style="--accent:#27836f">
+</section><section class="slide" data-index="44" data-slide-id="43" data-title="광물 암석과 천체 관측" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>044 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -723,7 +759,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:36.66667%"></i></div>
-</section><section class="slide" data-index="45" data-title="수학 체험전" style="--accent:#27836f">
+</section><section class="slide" data-index="45" data-slide-id="44" data-title="수학 체험전" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>045 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -737,7 +773,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:37.50000%"></i></div>
-</section><section class="slide" data-index="46" data-title="자기주도 심화탐구반" style="--accent:#27836f">
+</section><section class="slide" data-index="46" data-slide-id="45" data-title="자기주도 심화탐구반" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>046 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -751,7 +787,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:38.33333%"></i></div>
-</section><section class="slide" data-index="47" data-title="창의 과학 실험 캠프" style="--accent:#27836f">
+</section><section class="slide" data-index="47" data-slide-id="46" data-title="창의 과학 실험 캠프" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>047 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -765,7 +801,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:39.16667%"></i></div>
-</section><section class="slide" data-index="48" data-title="건축물 모형 제작" style="--accent:#27836f">
+</section><section class="slide" data-index="48" data-slide-id="47" data-title="건축물 모형 제작" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>048 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -779,7 +815,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:40.00000%"></i></div>
-</section><section class="slide" data-index="49" data-title="신나는 사이언스 랩" style="--accent:#27836f">
+</section><section class="slide" data-index="49" data-slide-id="48" data-title="신나는 사이언스 랩" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>049 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -793,7 +829,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:40.83333%"></i></div>
-</section><section class="slide" data-index="50" data-title="수학 골든벨" style="--accent:#27836f">
+</section><section class="slide" data-index="50" data-slide-id="49" data-title="수학 골든벨" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>050 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -807,7 +843,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:41.66667%"></i></div>
-</section><section class="slide" data-index="51" data-title="한여름밤 문학축제" style="--accent:#27836f">
+</section><section class="slide" data-index="51" data-slide-id="50" data-title="한여름밤 문학축제" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>051 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -821,7 +857,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:42.50000%"></i></div>
-</section><section class="slide" data-index="52" data-title="인문 인성 활동" style="--accent:#27836f">
+</section><section class="slide" data-index="52" data-slide-id="51" data-title="인문 인성 활동" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>052 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -835,7 +871,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:43.33333%"></i></div>
-</section><section class="slide" data-index="53" data-title="독서융합 탐구" style="--accent:#27836f">
+</section><section class="slide" data-index="53" data-slide-id="52" data-title="독서융합 탐구" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>053 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -849,7 +885,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:44.16667%"></i></div>
-</section><section class="slide" data-index="54" data-title="다채로운 독서 교육" style="--accent:#27836f">
+</section><section class="slide" data-index="54" data-slide-id="53" data-title="다채로운 독서 교육" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>054 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -863,7 +899,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:45.00000%"></i></div>
-</section><section class="slide" data-index="55" data-title="수리과학 활동" style="--accent:#27836f">
+</section><section class="slide" data-index="55" data-slide-id="54" data-title="수리과학 활동" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>055 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -877,7 +913,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:45.83333%"></i></div>
-</section><section class="slide" data-index="56" data-title="수리과학 체험" style="--accent:#27836f">
+</section><section class="slide" data-index="56" data-slide-id="55" data-title="수리과학 체험" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>056 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -891,7 +927,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:46.66667%"></i></div>
-</section><section class="slide" data-index="57" data-title="외국어 활동" style="--accent:#27836f">
+</section><section class="slide" data-index="57" data-slide-id="56" data-title="외국어 활동" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>057 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -905,7 +941,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:47.50000%"></i></div>
-</section><section class="slide" data-index="58" data-title="예체능 활동" style="--accent:#27836f">
+</section><section class="slide" data-index="58" data-slide-id="57" data-title="예체능 활동" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>058 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -919,7 +955,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:48.33333%"></i></div>
-</section><section class="slide" data-index="59" data-title="소프트웨어 인공지능 활동" style="--accent:#27836f">
+</section><section class="slide" data-index="59" data-slide-id="58" data-title="소프트웨어 인공지능 활동" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>059 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -933,7 +969,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:49.16667%"></i></div>
-</section><section class="slide" data-index="60" data-title="프로젝트 중심 동아리" style="--accent:#27836f">
+</section><section class="slide" data-index="60" data-slide-id="59" data-title="프로젝트 중심 동아리" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>060 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -947,7 +983,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:50.00000%"></i></div>
-</section><section class="slide" data-index="61" data-title="일곱빛깔마당" style="--accent:#27836f">
+</section><section class="slide" data-index="61" data-slide-id="60" data-title="일곱빛깔마당" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>061 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -961,7 +997,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:50.83333%"></i></div>
-</section><section class="slide" data-index="62" data-title="동아리 활동" style="--accent:#27836f">
+</section><section class="slide" data-index="62" data-slide-id="61" data-title="동아리 활동" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>062 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -975,7 +1011,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:51.66667%"></i></div>
-</section><section class="slide" data-index="63" data-title="연말 동아리 발표" style="--accent:#27836f">
+</section><section class="slide" data-index="63" data-slide-id="62" data-title="연말 동아리 발표" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>063 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -989,7 +1025,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:52.50000%"></i></div>
-</section><section class="slide" data-index="64" data-title="학교 스포츠클럽" style="--accent:#27836f">
+</section><section class="slide" data-index="64" data-slide-id="63" data-title="학교 스포츠클럽" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>064 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1003,7 +1039,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:53.33333%"></i></div>
-</section><section class="slide" data-index="65" data-title="학생자치회" style="--accent:#27836f">
+</section><section class="slide" data-index="65" data-slide-id="64" data-title="학생자치회" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>065 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1017,7 +1053,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:54.16667%"></i></div>
-</section><section class="slide" data-index="66" data-title="학생자치회 부서 조직" style="--accent:#27836f">
+</section><section class="slide" data-index="66" data-slide-id="65" data-title="학생자치회 부서 조직" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>066 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1031,7 +1067,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:55.00000%"></i></div>
-</section><section class="slide" data-index="67" data-title="학생자치 활동" style="--accent:#27836f">
+</section><section class="slide" data-index="67" data-slide-id="66" data-title="학생자치 활동" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>067 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1045,7 +1081,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:55.83333%"></i></div>
-</section><section class="slide" data-index="68" data-title="무비데이와 체육대회" style="--accent:#27836f">
+</section><section class="slide" data-index="68" data-slide-id="67" data-title="무비데이와 체육대회" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>068 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1059,7 +1095,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:56.66667%"></i></div>
-</section><section class="slide" data-index="69" data-title="교내 공연과 미니비상제" style="--accent:#27836f">
+</section><section class="slide" data-index="69" data-slide-id="68" data-title="교내 공연과 미니비상제" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>069 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1073,7 +1109,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:57.50000%"></i></div>
-</section><section class="slide" data-index="70" data-title="비상제" style="--accent:#27836f">
+</section><section class="slide" data-index="70" data-slide-id="69" data-title="비상제" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>070 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1087,7 +1123,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:58.33333%"></i></div>
-</section><section class="slide" data-index="71" data-title="대의원회" style="--accent:#27836f">
+</section><section class="slide" data-index="71" data-slide-id="70" data-title="대의원회" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>071 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1101,7 +1137,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:59.16667%"></i></div>
-</section><section class="slide" data-index="72" data-title="맞춤형 진로 프로그램" style="--accent:#27836f">
+</section><section class="slide" data-index="72" data-slide-id="71" data-title="맞춤형 진로 프로그램" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>072 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1115,7 +1151,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:60.00000%"></i></div>
-</section><section class="slide" data-index="73" data-title="진로 진학 대학입시 지도" style="--accent:#27836f">
+</section><section class="slide" data-index="73" data-slide-id="72" data-title="진로 진학 대학입시 지도" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>073 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1129,7 +1165,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:60.83333%"></i></div>
-</section><section class="slide" data-index="74" data-title="핵심 진로진학 프로그램" style="--accent:#27836f">
+</section><section class="slide" data-index="74" data-slide-id="73" data-title="핵심 진로진학 프로그램" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>074 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1143,7 +1179,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:61.66667%"></i></div>
-</section><section class="slide" data-index="75" data-title="연간 진로진학 운영" style="--accent:#27836f">
+</section><section class="slide" data-index="75" data-slide-id="74" data-title="연간 진로진학 운영" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>075 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1157,7 +1193,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:62.50000%"></i></div>
-</section><section class="slide" data-index="76" data-title="선배 멘토와의 만남" style="--accent:#27836f">
+</section><section class="slide" data-index="76" data-slide-id="75" data-title="선배 멘토와의 만남" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>076 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1171,7 +1207,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:63.33333%"></i></div>
-</section><section class="slide" data-index="77" data-title="일대일 진로진학 컨설팅" style="--accent:#27836f">
+</section><section class="slide" data-index="77" data-slide-id="76" data-title="일대일 진로진학 컨설팅" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>077 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1185,7 +1221,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:64.16667%"></i></div>
-</section><section class="slide" data-index="78" data-title="학부모 진학 아카데미" style="--accent:#27836f">
+</section><section class="slide" data-index="78" data-slide-id="77" data-title="학부모 진학 아카데미" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>078 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1199,7 +1235,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:65.00000%"></i></div>
-</section><section class="slide" data-index="79" data-title="진로진학 프로그램 요약" style="--accent:#27836f">
+</section><section class="slide" data-index="79" data-slide-id="78" data-title="진로진학 프로그램 요약" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>079 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1213,7 +1249,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:65.83333%"></i></div>
-</section><section class="slide" data-index="80" data-title="진학 아카데미" style="--accent:#27836f">
+</section><section class="slide" data-index="80" data-slide-id="79" data-title="진학 아카데미" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>080 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1227,7 +1263,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:66.66667%"></i></div>
-</section><section class="slide" data-index="81" data-title="입시설명회와 교사 연수" style="--accent:#27836f">
+</section><section class="slide" data-index="81" data-slide-id="80" data-title="입시설명회와 교사 연수" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>081 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1241,7 +1277,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:67.50000%"></i></div>
-</section><section class="slide" data-index="82" data-title="멘토링과 진로 탐색" style="--accent:#27836f">
+</section><section class="slide" data-index="82" data-slide-id="81" data-title="멘토링과 진로 탐색" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>082 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1255,7 +1291,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:68.33333%"></i></div>
-</section><section class="slide" data-index="83" data-title="인성교육" style="--accent:#27836f">
+</section><section class="slide" data-index="83" data-slide-id="82" data-title="인성교육" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>083 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1269,7 +1305,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:69.16667%"></i></div>
-</section><section class="slide" data-index="84" data-title="수련활동과 수학여행" style="--accent:#27836f">
+</section><section class="slide" data-index="84" data-slide-id="83" data-title="수련활동과 수학여행" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>084 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1283,7 +1319,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:70.00000%"></i></div>
-</section><section class="slide" data-index="85" data-title="상호문화와 인성교육" style="--accent:#27836f">
+</section><section class="slide" data-index="85" data-slide-id="84" data-title="상호문화와 인성교육" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>085 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1297,7 +1333,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:70.83333%"></i></div>
-</section><section class="slide" data-index="86" data-title="예체능 활동" style="--accent:#27836f">
+</section><section class="slide" data-index="86" data-slide-id="85" data-title="예체능 활동" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>086 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1311,7 +1347,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:71.66667%"></i></div>
-</section><section class="slide" data-index="87" data-title="진로 연계 동아리" style="--accent:#27836f">
+</section><section class="slide" data-index="87" data-slide-id="86" data-title="진로 연계 동아리" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>087 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1325,7 +1361,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:72.50000%"></i></div>
-</section><section class="slide" data-index="88" data-title="공연 활동" style="--accent:#27836f">
+</section><section class="slide" data-index="88" data-slide-id="87" data-title="공연 활동" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>088 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1339,7 +1375,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:73.33333%"></i></div>
-</section><section class="slide" data-index="89" data-title="체육 한마당" style="--accent:#27836f">
+</section><section class="slide" data-index="89" data-slide-id="88" data-title="체육 한마당" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>089 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1353,7 +1389,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:74.16667%"></i></div>
-</section><section class="slide" data-index="90" data-title="예술 활동" style="--accent:#27836f">
+</section><section class="slide" data-index="90" data-slide-id="89" data-title="예술 활동" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>090 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1367,7 +1403,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:75.00000%"></i></div>
-</section><section class="slide" data-index="91" data-title="기본생활습관" style="--accent:#27836f">
+</section><section class="slide" data-index="91" data-slide-id="90" data-title="기본생활습관" style="--accent:#27836f">
   <div class="standard-meta" aria-hidden="true"><span>02　성장 원동력</span><span>091 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">02</span>
@@ -1381,7 +1417,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:75.83333%"></i></div>
-</section><section class="slide" data-index="92" data-title="3부 동패고 교육과정" style="--accent:#d9772c">
+</section><section class="slide" data-index="92" data-slide-id="91" data-title="3부 동패고 교육과정" style="--accent:#d9772c">
   <div class="standard-meta" aria-hidden="true"><span>03　교육과정</span><span>092 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">03</span>
@@ -1395,7 +1431,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:76.66667%"></i></div>
-</section><section class="slide" data-index="93" data-title="2027학년도 일과 시간표" style="--accent:#d9772c">
+</section><section class="slide" data-index="93" data-slide-id="92" data-title="2027학년도 일과 시간표" style="--accent:#d9772c">
   <div class="standard-meta" aria-hidden="true"><span>03　교육과정</span><span>093 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">03</span>
@@ -1409,7 +1445,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:77.50000%"></i></div>
-</section><section class="slide" data-index="94" data-title="2027학년도 교육과정" style="--accent:#d9772c">
+</section><section class="slide" data-index="94" data-slide-id="93" data-title="2027학년도 교육과정" style="--accent:#d9772c">
   <div class="standard-meta" aria-hidden="true"><span>03　교육과정</span><span>094 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">03</span>
@@ -1423,7 +1459,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:78.33333%"></i></div>
-</section><section class="slide" data-index="95" data-title="기본에 충실한 교육과정" style="--accent:#d9772c">
+</section><section class="slide" data-index="95" data-slide-id="94" data-title="기본에 충실한 교육과정" style="--accent:#d9772c">
   <div class="standard-meta" aria-hidden="true"><span>03　교육과정</span><span>095 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">03</span>
@@ -1437,7 +1473,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:79.16667%"></i></div>
-</section><section class="slide" data-index="96" data-title="안정적인 학교생활" style="--accent:#d9772c">
+</section><section class="slide" data-index="96" data-slide-id="95" data-title="안정적인 학교생활" style="--accent:#d9772c">
   <div class="standard-meta" aria-hidden="true"><span>03　교육과정</span><span>096 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">03</span>
@@ -1451,7 +1487,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:80.00000%"></i></div>
-</section><section class="slide" data-index="97" data-title="폭넓은 과목 선택권" style="--accent:#d9772c">
+</section><section class="slide" data-index="97" data-slide-id="96" data-title="폭넓은 과목 선택권" style="--accent:#d9772c">
   <div class="standard-meta" aria-hidden="true"><span>03　교육과정</span><span>097 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">03</span>
@@ -1465,7 +1501,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:80.83333%"></i></div>
-</section><section class="slide" data-index="98" data-title="과목 선택과 대학 평가" style="--accent:#d9772c">
+</section><section class="slide" data-index="98" data-slide-id="97" data-title="과목 선택과 대학 평가" style="--accent:#d9772c">
   <div class="standard-meta" aria-hidden="true"><span>03　교육과정</span><span>098 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">03</span>
@@ -1479,7 +1515,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:81.66667%"></i></div>
-</section><section class="slide" data-index="99" data-title="공학 인공지능 특성화" style="--accent:#d9772c">
+</section><section class="slide" data-index="99" data-slide-id="98" data-title="공학 인공지능 특성화" style="--accent:#d9772c">
   <div class="standard-meta" aria-hidden="true"><span>03　교육과정</span><span>099 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">03</span>
@@ -1493,7 +1529,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:82.50000%"></i></div>
-</section><section class="slide" data-index="100" data-title="공학 인공지능 디지털 융합" style="--accent:#d9772c">
+</section><section class="slide" data-index="100" data-slide-id="99" data-title="공학 인공지능 디지털 융합" style="--accent:#d9772c">
   <div class="standard-meta" aria-hidden="true"><span>03　교육과정</span><span>100 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">03</span>
@@ -1507,7 +1543,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:83.33333%"></i></div>
-</section><section class="slide" data-index="101" data-title="미래 진로를 준비하는 학교" style="--accent:#d9772c">
+</section><section class="slide" data-index="101" data-slide-id="100" data-title="미래 진로를 준비하는 학교" style="--accent:#d9772c">
   <div class="standard-meta" aria-hidden="true"><span>03　교육과정</span><span>101 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">03</span>
@@ -1521,7 +1557,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:84.16667%"></i></div>
-</section><section class="slide" data-index="102" data-title="소프트웨어 인공지능 체험전" style="--accent:#d9772c">
+</section><section class="slide" data-index="102" data-slide-id="101" data-title="소프트웨어 인공지능 체험전" style="--accent:#d9772c">
   <div class="standard-meta" aria-hidden="true"><span>03　교육과정</span><span>102 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">03</span>
@@ -1535,7 +1571,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:85.00000%"></i></div>
-</section><section class="slide" data-index="103" data-title="인공지능 생태교란종 탐지 프로젝트" style="--accent:#d9772c">
+</section><section class="slide" data-index="103" data-slide-id="102" data-title="인공지능 생태교란종 탐지 프로젝트" style="--accent:#d9772c">
   <div class="standard-meta" aria-hidden="true"><span>03　교육과정</span><span>103 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">03</span>
@@ -1549,7 +1585,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:85.83333%"></i></div>
-</section><section class="slide" data-index="104" data-title="인공지능 융합 웨어 개발" style="--accent:#d9772c">
+</section><section class="slide" data-index="104" data-slide-id="103" data-title="인공지능 융합 웨어 개발" style="--accent:#d9772c">
   <div class="standard-meta" aria-hidden="true"><span>03　교육과정</span><span>104 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">03</span>
@@ -1563,7 +1599,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:86.66667%"></i></div>
-</section><section class="slide" data-index="105" data-title="인공지능 진로 지원 프로젝트" style="--accent:#d9772c">
+</section><section class="slide" data-index="105" data-slide-id="104" data-title="인공지능 진로 지원 프로젝트" style="--accent:#d9772c">
   <div class="standard-meta" aria-hidden="true"><span>03　교육과정</span><span>105 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">03</span>
@@ -1577,7 +1613,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:87.50000%"></i></div>
-</section><section class="slide" data-index="106" data-title="청소년 소프트웨어 동행" style="--accent:#d9772c">
+</section><section class="slide" data-index="106" data-slide-id="105" data-title="청소년 소프트웨어 동행" style="--accent:#d9772c">
   <div class="standard-meta" aria-hidden="true"><span>03　교육과정</span><span>106 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">03</span>
@@ -1591,7 +1627,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:88.33333%"></i></div>
-</section><section class="slide" data-index="107" data-title="인공지능 동행 해커톤" style="--accent:#d9772c">
+</section><section class="slide" data-index="107" data-slide-id="106" data-title="인공지능 동행 해커톤" style="--accent:#d9772c">
   <div class="standard-meta" aria-hidden="true"><span>03　교육과정</span><span>107 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">03</span>
@@ -1605,7 +1641,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:89.16667%"></i></div>
-</section><section class="slide" data-index="108" data-title="미래 공학 진로체험" style="--accent:#d9772c">
+</section><section class="slide" data-index="108" data-slide-id="107" data-title="미래 공학 진로체험" style="--accent:#d9772c">
   <div class="standard-meta" aria-hidden="true"><span>03　교육과정</span><span>108 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">03</span>
@@ -1619,7 +1655,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:90.00000%"></i></div>
-</section><section class="slide" data-index="109" data-title="건학 프로그램" style="--accent:#d9772c">
+</section><section class="slide" data-index="109" data-slide-id="108" data-title="건학 프로그램" style="--accent:#d9772c">
   <div class="standard-meta" aria-hidden="true"><span>03　교육과정</span><span>109 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">03</span>
@@ -1633,7 +1669,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:90.83333%"></i></div>
-</section><section class="slide" data-index="110" data-title="4부 동패고 입학 안내" style="--accent:#3a63a8">
+</section><section class="slide" data-index="110" data-slide-id="109" data-title="4부 동패고 입학 안내" style="--accent:#3a63a8">
   <div class="standard-meta" aria-hidden="true"><span>04　입학 안내</span><span>110 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">04</span>
@@ -1647,7 +1683,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:91.66667%"></i></div>
-</section><section class="slide" data-index="111" data-title="모집 안내와 원서 접수" style="--accent:#3a63a8">
+</section><section class="slide" data-index="111" data-slide-id="110" data-title="모집 안내와 원서 접수" style="--accent:#3a63a8">
   <div class="standard-meta" aria-hidden="true"><span>04　입학 안내</span><span>111 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">04</span>
@@ -1661,7 +1697,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:92.50000%"></i></div>
-</section><section class="slide" data-index="112" data-title="선발 기준과 제출 서류" style="--accent:#3a63a8">
+</section><section class="slide" data-index="112" data-slide-id="111" data-title="선발 기준과 제출 서류" style="--accent:#3a63a8">
   <div class="standard-meta" aria-hidden="true"><span>04　입학 안내</span><span>112 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">04</span>
@@ -1675,7 +1711,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:93.33333%"></i></div>
-</section><section class="slide" data-index="113" data-title="신입생 지원 현황" style="--accent:#3a63a8">
+</section><section class="slide" data-index="113" data-slide-id="112" data-title="신입생 지원 현황" style="--accent:#3a63a8">
   <div class="standard-meta" aria-hidden="true"><span>04　입학 안내</span><span>113 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">04</span>
@@ -1689,7 +1725,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:94.16667%"></i></div>
-</section><section class="slide" data-index="114" data-title="5부 대학 입시 결과" style="--accent:#5b4b91">
+</section><section class="slide" data-index="114" data-slide-id="113" data-title="5부 대학 입시 결과" style="--accent:#5b4b91">
   <div class="standard-meta" aria-hidden="true"><span>05　대학 입시 결과</span><span>114 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">05</span>
@@ -1703,7 +1739,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:95.00000%"></i></div>
-</section><section class="slide" data-index="115" data-title="2026학년도 대입 합격 현황" style="--accent:#5b4b91">
+</section><section class="slide" data-index="115" data-slide-id="114" data-title="2026학년도 대입 합격 현황" style="--accent:#5b4b91">
   <div class="standard-meta" aria-hidden="true"><span>05　대학 입시 결과</span><span>115 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">05</span>
@@ -1717,7 +1753,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:95.83333%"></i></div>
-</section><section class="slide" data-index="116" data-title="약학과와 주요 학교 합격 현황" style="--accent:#5b4b91">
+</section><section class="slide" data-index="116" data-slide-id="115" data-title="약학과와 주요 학교 합격 현황" style="--accent:#5b4b91">
   <div class="standard-meta" aria-hidden="true"><span>05　대학 입시 결과</span><span>116 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">05</span>
@@ -1731,7 +1767,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:96.66667%"></i></div>
-</section><section class="slide" data-index="117" data-title="대학 진학 결과가 시사하는 점" style="--accent:#5b4b91">
+</section><section class="slide" data-index="117" data-slide-id="116" data-title="대학 진학 결과가 시사하는 점" style="--accent:#5b4b91">
   <div class="standard-meta" aria-hidden="true"><span>05　대학 입시 결과</span><span>117 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">05</span>
@@ -1745,7 +1781,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:97.50000%"></i></div>
-</section><section class="slide" data-index="118" data-title="대학 진학에 유리한 이유" style="--accent:#5b4b91">
+</section><section class="slide" data-index="118" data-slide-id="117" data-title="대학 진학에 유리한 이유" style="--accent:#5b4b91">
   <div class="standard-meta" aria-hidden="true"><span>05　대학 입시 결과</span><span>118 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">05</span>
@@ -1759,7 +1795,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:98.33333%"></i></div>
-</section><section class="slide" data-index="119" data-title="입학 관련 질의응답" style="--accent:#2f455c">
+</section><section class="slide" data-index="119" data-slide-id="118" data-title="입학 관련 질의응답" style="--accent:#2f455c">
   <div class="standard-meta" aria-hidden="true"><span>06　질의응답</span><span>119 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">06</span>
@@ -1773,7 +1809,7 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
     <span class="deck-year">2027</span>
   </div>
   <div class="page-progress" aria-hidden="true"><i style="width:99.16667%"></i></div>
-</section><section class="slide" data-index="120" data-title="감사합니다" style="--accent:#2f455c">
+</section><section class="slide" data-index="120" data-slide-id="119" data-title="감사합니다" style="--accent:#2f455c">
   <div class="standard-meta" aria-hidden="true"><span>06　질의응답</span><span>120 / 120</span></div>
   <div class="brand-rail left" aria-hidden="true">
     <span class="section-no">06</span>
@@ -1794,9 +1830,11 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
   <span id="counter" aria-live="polite">1 / 120</span>
   <button id="next" type="button" aria-label="다음 화면">▶</button>
   <button id="list" type="button">목록</button>
+  <button id="manage-pages" type="button">페이지 관리</button>
   <button id="edit-cover-info" type="button">표지 정보</button>
   <button id="fullscreen" type="button">전체 화면</button>
 </nav>
+<button id="page-manager-launcher" type="button" aria-label="이미지 페이지 추가 및 삭제">페이지 관리</button>
 <div id="cover-editor" role="dialog" aria-modal="true" aria-labelledby="cover-editor-title">
   <form id="cover-form" class="editor-card">
     <h2 id="cover-editor-title">1쪽 설명회 정보</h2>
@@ -1818,22 +1856,31 @@ body{font-family:"학교안심 알림장 TTF R","Malgun Gothic","Apple SD Gothic
   <div class="overview-head">
     <div><h2 id="overview-title">슬라이드 목록</h2><p id="overview-note">화면을 선택하면 해당 슬라이드로 이동합니다.</p></div>
     <div class="overview-actions">
+      <button id="edit-pages" type="button">페이지 편집</button>
+      <button id="add-pages" type="button">이미지 추가</button>
+      <button id="restore-deleted" type="button">삭제 페이지 복원</button>
+      <button id="save-edited-file" type="button">수정본 저장</button>
+      <button id="edit-order" type="button">순서 편집</button>
+      <button id="reset-order" type="button">순서 초기화</button>
       <button id="edit-hidden" type="button">숨김 편집</button>
       <button id="reset-hidden" type="button">숨김 전체 해제</button>
       <button id="close-overview" type="button">닫기</button>
     </div>
   </div>
   <div id="overview-grid"></div>
+  <input id="add-images-input" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
 </aside>
-<div id="toast">Enter·Space·클릭 다음　← 이전　M 목록　I 표지 정보　F 전체 화면</div>
+<div id="toast">Enter·Space·클릭 다음　← 이전　M 목록　P 페이지 관리　I 표지 정보　F 전체 화면</div>
 <script>
-const slides=[...document.querySelectorAll('.slide')];
+const baseSlides=[...document.querySelectorAll('.slide')];
 const deck=document.querySelector('#deck');
 const counter=document.querySelector('#counter');
 const overview=document.querySelector('#overview');
 const grid=document.querySelector('#overview-grid');
 const overviewTitle=document.querySelector('#overview-title');
 const overviewNote=document.querySelector('#overview-note');
+const editOrderButton=document.querySelector('#edit-order');
+const resetOrderButton=document.querySelector('#reset-order');
 const editHiddenButton=document.querySelector('#edit-hidden');
 const resetHiddenButton=document.querySelector('#reset-hidden');
 const coverEditor=document.querySelector('#cover-editor');
@@ -1842,19 +1889,40 @@ const coverTitle=document.querySelector('#cover-title');
 const coverPlace=document.querySelector('#cover-place');
 const coverSchedule=document.querySelector('#cover-schedule');
 const STORAGE_KEY='dongpae-admission-hidden-slides-v2-120';
+const ORDER_STORAGE_KEY='dongpae-admission-slide-order-v1-120';
 const COVER_INFO_KEY='dongpae-admission-cover-info-v1';
 const EDIT_PASSWORD='9122';
-let current=0;
+const slideById=new Map(baseSlides.map(slide=>[Number(slide.dataset.slideId),slide]));
+let order=loadOrder();
+let current=order[0];
 let busy=false;
 let editMode=false;
+let reorderMode=false;
+let draggedId=null;
 let hidden=loadHidden();
 let coverInfo=loadCoverInfo();
+
+function defaultOrder(){return baseSlides.map(slide=>Number(slide.dataset.slideId))}
+
+function loadOrder(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(ORDER_STORAGE_KEY)||'[]');
+    const unique=new Set(saved);
+    const valid=Array.isArray(saved)&&saved.length===baseSlides.length&&unique.size===baseSlides.length&&saved.every(id=>Number.isInteger(id)&&slideById.has(id));
+    return valid?saved:defaultOrder();
+  }catch(error){return defaultOrder()}
+}
+
+function saveOrder(){
+  try{localStorage.setItem(ORDER_STORAGE_KEY,JSON.stringify(order))}
+  catch(error){showToast('이 브라우저에서는 순서 설정을 저장할 수 없습니다.')}
+}
 
 function loadHidden(){
   try{
     const saved=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');
-    const valid=Array.isArray(saved)?saved.filter(index=>Number.isInteger(index)&&index>=0&&index<slides.length):[];
-    return new Set(valid.length<slides.length?valid:[]);
+    const valid=Array.isArray(saved)?saved.filter(id=>Number.isInteger(id)&&slideById.has(id)):[];
+    return new Set(valid.length<baseSlides.length?valid:[]);
   }catch(error){return new Set()}
 }
 
@@ -1881,6 +1949,7 @@ function persistCoverInfo(){
 
 function renderCoverInfo(){
   const infoBox=document.querySelector('#event-info');
+  if(!infoBox)return;
   const titleRow=document.querySelector('#event-title-row');
   const placeRow=document.querySelector('#event-place-row');
   const scheduleRow=document.querySelector('#event-schedule-row');
@@ -1915,7 +1984,30 @@ function clearCoverInfo(){
   showToast('표지 정보를 삭제했습니다.');
 }
 
-function visibleIndexes(){return slides.map((_,index)=>index).filter(index=>!hidden.has(index))}
+function visibleIds(){return order.filter(id=>!hidden.has(id))}
+
+function sequenceNumber(id){return order.indexOf(id)+1}
+
+function applyOrder(){
+  order.forEach((id,position)=>{
+    const slide=slideById.get(id);
+    deck.append(slide);
+    const page=position+1;
+    slide.dataset.index=String(page);
+    slide.querySelector('.standard-meta span:last-child').textContent=`${String(page).padStart(3,'0')} / ${baseSlides.length}`;
+    slide.querySelector('.page-current').textContent=String(page).padStart(3,'0');
+    slide.querySelector('.page-total').textContent=`/ ${baseSlides.length}`;
+    slide.querySelector('.source-slide img').alt=`${page}번 슬라이드 ${slide.dataset.title}`;
+    const item=grid.querySelector(`[data-slide-id="${id}"]`);
+    if(item){
+      item.querySelector('.item-label').innerHTML=`<b>${String(page).padStart(3,'0')}</b>${slide.dataset.title}`;
+      grid.append(item);
+    }
+  });
+  updateCounter();
+  updateProgress();
+  history.replaceState(null,'',`#${sequenceNumber(current)}`);
+}
 
 function showToast(message){
   const toast=document.querySelector('#toast');
@@ -1931,53 +2023,55 @@ function fitDeck(){
 }
 
 function updateCounter(){
-  const visible=visibleIndexes();
+  const visible=visibleIds();
   const position=visible.indexOf(current);
   counter.textContent=position>=0?`${position+1} / ${visible.length}`:`- / ${visible.length}`;
 }
 
 function updateProgress(){
-  const visible=visibleIndexes();
-  slides.forEach(slide=>slide.querySelector('.page-progress i').style.width='0%');
-  visible.forEach((index,position)=>{
-    slides[index].querySelector('.page-progress i').style.width=`${(position+1)/visible.length*100}%`;
+  const visible=visibleIds();
+  baseSlides.forEach(slide=>slide.querySelector('.page-progress i').style.width='0%');
+  visible.forEach((id,position)=>{
+    slideById.get(id).querySelector('.page-progress i').style.width=`${(position+1)/visible.length*100}%`;
   });
 }
 
 function applyHiddenState(){
-  slides.forEach((slide,index)=>{
-    const isHidden=hidden.has(index);
+  baseSlides.forEach(slide=>{
+    const id=Number(slide.dataset.slideId);
+    const isHidden=hidden.has(id);
     slide.classList.toggle('is-hidden',isHidden);
     slide.setAttribute('aria-hidden',String(isHidden));
   });
-  slides.forEach(slide=>slide.classList.remove('last-visible'));
-  const visible=visibleIndexes();
-  if(visible.length)slides[visible.at(-1)].classList.add('last-visible');
-  [...grid.children].forEach((button,index)=>button.classList.toggle('is-hidden',hidden.has(index)));
+  baseSlides.forEach(slide=>slide.classList.remove('last-visible'));
+  const visible=visibleIds();
+  if(visible.length)slideById.get(visible.at(-1)).classList.add('last-visible');
+  [...grid.children].forEach(item=>item.classList.toggle('is-hidden',hidden.has(Number(item.dataset.slideId))));
   updateCounter();
   updateProgress();
-  overviewTitle.textContent=editMode?`슬라이드 숨김 편집 (${hidden.size}쪽 숨김)`:`슬라이드 목록 (${visible.length}쪽)`;
+  overviewTitle.textContent=reorderMode?`슬라이드 순서 편집 (${order.length}쪽)`:editMode?`슬라이드 숨김 편집 (${hidden.size}쪽 숨김)`:`슬라이드 목록 (${visible.length}쪽)`;
 }
 
-function show(index,direction=1,instant=false){
-  if(index<0||index>=slides.length||hidden.has(index)||index===current||(!instant&&busy))return;
+function show(id,direction=1,instant=false){
+  if(!slideById.has(id)||hidden.has(id)||id===current||(!instant&&busy))return;
   busy=!instant;
-  const previous=slides[current];
-  const incoming=slides[index];
+  const previous=slideById.get(current);
+  const incoming=slideById.get(id);
   if(!instant)previous.classList.add('leaving');
   previous.classList.remove('active');
   incoming.style.transform=instant?'none':`translateX(${direction>0?'10px':'-10px'})`;
   requestAnimationFrame(()=>{incoming.classList.add('active');incoming.style.transform=''});
-  current=index;
+  current=id;
   updateCounter();
-  history.replaceState(null,'',`#${current+1}`);
+  history.replaceState(null,'',`#${sequenceNumber(current)}`);
   if(instant)busy=false;
   else setTimeout(()=>{previous.classList.remove('leaving');busy=false},300);
 }
 
-function nextVisible(from,direction){
-  for(let index=from+direction;index>=0&&index<slides.length;index+=direction){
-    if(!hidden.has(index))return index;
+function nextVisible(fromId,direction){
+  const start=order.indexOf(fromId);
+  for(let position=start+direction;position>=0&&position<order.length;position+=direction){
+    if(!hidden.has(order[position]))return order[position];
   }
   return -1;
 }
@@ -1998,10 +2092,31 @@ function toggleFullscreen(){document.fullscreenElement?document.exitFullscreen()
 
 function setEditMode(enabled){
   editMode=enabled;
-  overview.classList.toggle('editing',enabled);
-  editHiddenButton.classList.toggle('active',enabled);
-  editHiddenButton.textContent=enabled?'편집 종료':'숨김 편집';
-  overviewNote.textContent=enabled?'화면을 선택하여 숨기거나 다시 표시합니다.':'화면을 선택하면 해당 슬라이드로 이동합니다.';
+  if(enabled)reorderMode=false;
+  syncOverviewMode();
+}
+
+function setReorderMode(enabled){
+  reorderMode=enabled;
+  if(enabled)editMode=false;
+  syncOverviewMode();
+}
+
+function setNormalMode(){
+  editMode=false;
+  reorderMode=false;
+  syncOverviewMode();
+}
+
+function syncOverviewMode(){
+  overview.classList.toggle('editing',editMode);
+  overview.classList.toggle('reordering',reorderMode);
+  editHiddenButton.classList.toggle('active',editMode);
+  editOrderButton.classList.toggle('active',reorderMode);
+  editHiddenButton.textContent=editMode?'편집 종료':'숨김 편집';
+  editOrderButton.textContent=reorderMode?'편집 종료':'순서 편집';
+  overviewNote.textContent=reorderMode?'끌어 놓거나 앞·뒤 버튼을 눌러 순서를 바꿉니다. 변경 내용은 자동 저장됩니다.':editMode?'화면을 선택하여 숨기거나 다시 표시합니다.':'화면을 선택하면 해당 슬라이드로 이동합니다.';
+  [...grid.children].forEach(item=>item.draggable=reorderMode);
   applyHiddenState();
 }
 
@@ -2014,18 +2129,27 @@ function toggleEditMode(){
   showToast('숨길 화면을 선택하세요. 다시 선택하면 표시됩니다.');
 }
 
-function toggleHidden(index){
-  const hiding=!hidden.has(index);
-  if(hiding&&visibleIndexes().length===1){showToast('마지막 화면은 숨길 수 없습니다.');return}
-  if(hiding)hidden.add(index);else hidden.delete(index);
-  if(hiding&&index===current){
-    const fallback=nextVisible(index,1)>=0?nextVisible(index,1):nextVisible(index,-1);
+function toggleReorderMode(){
+  if(reorderMode){setReorderMode(false);return}
+  const password=prompt('순서 편집 비밀번호를 입력하세요.');
+  if(password===null)return;
+  if(password!==EDIT_PASSWORD){showToast('비밀번호가 올바르지 않습니다.');return}
+  setReorderMode(true);
+  showToast('썸네일을 끌거나 앞·뒤 버튼으로 이동하세요.');
+}
+
+function toggleHidden(id){
+  const hiding=!hidden.has(id);
+  if(hiding&&visibleIds().length===1){showToast('마지막 화면은 숨길 수 없습니다.');return}
+  if(hiding)hidden.add(id);else hidden.delete(id);
+  if(hiding&&id===current){
+    const fallback=nextVisible(id,1)>=0?nextVisible(id,1):nextVisible(id,-1);
     busy=false;
-    if(fallback>=0)show(fallback,fallback>index?1:-1,true);
+    if(fallback>=0)show(fallback,sequenceNumber(fallback)>sequenceNumber(id)?1:-1,true);
   }
   saveHidden();
   applyHiddenState();
-  showToast(`${index+1}번 화면을 ${hiding?'숨겼습니다.':'다시 표시합니다.'}`);
+  showToast(`${sequenceNumber(id)}번 화면을 ${hiding?'숨겼습니다.':'다시 표시합니다.'}`);
 }
 
 function resetHidden(){
@@ -2037,41 +2161,137 @@ function resetHidden(){
   showToast('모든 화면을 다시 표시했습니다.');
 }
 
-function closeOverview(){setEditMode(false);overview.classList.remove('open');document.querySelector('#list').focus()}
-
-function openOverview(){
-  if(!grid.children.length){
-    slides.forEach((slide,index)=>{
-      const button=document.createElement('button');
-      button.className='overview-item';
-      button.type='button';
-      const thumb=document.createElement('img');
-      thumb.src=slide.querySelector('img').src;
-      thumb.alt='';
-      const label=document.createElement('span');
-      label.className='item-label';
-      label.innerHTML=`<b>${String(index+1).padStart(3,'0')}</b>${slide.dataset.title}`;
-      const badge=document.createElement('span');
-      badge.className='hidden-badge';
-      badge.textContent='숨김';
-      button.append(thumb,label,badge);
-      button.addEventListener('click',()=>{
-        if(editMode){toggleHidden(index);return}
-        overview.classList.remove('open');
-        show(index,index>=current?1:-1,true);
-      });
-      grid.append(button);
-    });
-  }
-  setEditMode(false);
+function completeOrderChange(focusId){
+  saveOrder();
+  applyOrder();
   applyHiddenState();
-  overview.classList.add('open');
-  grid.children[current]?.scrollIntoView({block:'center'});
+  const item=grid.querySelector(`[data-slide-id="${focusId}"]`);
+  item?.focus();
+  item?.scrollIntoView({block:'nearest'});
+  showToast(`순서를 변경했습니다. 현재 위치는 ${sequenceNumber(focusId)}쪽입니다.`);
 }
 
-const requested=Math.min(slides.length-1,Math.max(0,(Number(location.hash.slice(1))||1)-1));
-current=hidden.has(requested)?visibleIndexes()[0]:requested;
-slides[current].classList.add('active');
+function moveBy(id,delta){
+  const from=order.indexOf(id);
+  const to=from+delta;
+  if(from<0||to<0||to>=order.length){showToast(delta<0?'이미 첫 번째 화면입니다.':'이미 마지막 화면입니다.');return}
+  [order[from],order[to]]=[order[to],order[from]];
+  completeOrderChange(id);
+}
+
+function moveTo(id,targetId,after){
+  if(id===targetId)return;
+  const updated=order.filter(value=>value!==id);
+  const targetPosition=updated.indexOf(targetId);
+  if(targetPosition<0)return;
+  updated.splice(targetPosition+(after?1:0),0,id);
+  if(updated.every((value,index)=>value===order[index]))return;
+  order=updated;
+  completeOrderChange(id);
+}
+
+function resetOrder(){
+  const defaults=defaultOrder();
+  if(order.every((id,index)=>id===defaults[index])){showToast('이미 원래 순서입니다.');return}
+  if(!confirm('슬라이드 순서를 처음 상태로 되돌릴까요?'))return;
+  order=defaults;
+  completeOrderChange(current);
+}
+
+function clearDragStyles(){
+  draggedId=null;
+  [...grid.children].forEach(item=>item.classList.remove('dragging','drag-target'));
+}
+
+function ensureOverviewItems(){
+  if(grid.children.length)return;
+  baseSlides.forEach(slide=>{
+    const id=Number(slide.dataset.slideId);
+    const item=document.createElement('div');
+    item.className='overview-item';
+    item.dataset.slideId=String(id);
+    item.setAttribute('role','button');
+    item.tabIndex=0;
+    const thumb=document.createElement('img');
+    thumb.src=slide.querySelector('img').src;
+    thumb.alt='';
+    const label=document.createElement('span');
+    label.className='item-label';
+    const badge=document.createElement('span');
+    badge.className='hidden-badge';
+    badge.textContent='숨김';
+    const controls=document.createElement('div');
+    controls.className='reorder-controls';
+    const earlier=document.createElement('button');
+    earlier.type='button';
+    earlier.textContent='◀ 앞으로';
+    earlier.setAttribute('aria-label','이 슬라이드를 한 칸 앞으로 이동');
+    const later=document.createElement('button');
+    later.type='button';
+    later.textContent='뒤로 ▶';
+    later.setAttribute('aria-label','이 슬라이드를 한 칸 뒤로 이동');
+    controls.append(earlier,later);
+    item.append(thumb,label,badge,controls);
+    earlier.addEventListener('click',event=>{event.stopPropagation();moveBy(id,-1)});
+    later.addEventListener('click',event=>{event.stopPropagation();moveBy(id,1)});
+    item.addEventListener('click',event=>{
+      if(event.target.closest('.reorder-controls')||reorderMode)return;
+      if(editMode){toggleHidden(id);return}
+      overview.classList.remove('open');
+      const direction=sequenceNumber(id)>=sequenceNumber(current)?1:-1;
+      show(id,direction,true);
+    });
+    item.addEventListener('keydown',event=>{
+      if(reorderMode)return;
+      if(event.key==='Enter'||event.key===' '){event.preventDefault();item.click()}
+    });
+    item.addEventListener('dragstart',event=>{
+      if(!reorderMode){event.preventDefault();return}
+      draggedId=id;
+      item.classList.add('dragging');
+      event.dataTransfer.effectAllowed='move';
+      event.dataTransfer.setData('text/plain',String(id));
+    });
+    item.addEventListener('dragover',event=>{
+      if(!reorderMode||draggedId===null||draggedId===id)return;
+      event.preventDefault();
+      event.dataTransfer.dropEffect='move';
+      item.classList.add('drag-target');
+    });
+    item.addEventListener('dragleave',event=>{
+      if(!item.contains(event.relatedTarget))item.classList.remove('drag-target');
+    });
+    item.addEventListener('drop',event=>{
+      if(!reorderMode||draggedId===null||draggedId===id)return;
+      event.preventDefault();
+      const rect=item.getBoundingClientRect();
+      const middleY=rect.top+rect.height/2;
+      const nearMiddle=Math.abs(event.clientY-middleY)<rect.height*.24;
+      const after=nearMiddle?event.clientX>rect.left+rect.width/2:event.clientY>middleY;
+      const movingId=draggedId;
+      clearDragStyles();
+      moveTo(movingId,id,after);
+    });
+    item.addEventListener('dragend',clearDragStyles);
+    grid.append(item);
+  });
+  applyOrder();
+}
+
+function closeOverview(){setNormalMode();overview.classList.remove('open');document.querySelector('#list').focus()}
+
+function openOverview(){
+  ensureOverviewItems();
+  setNormalMode();
+  applyHiddenState();
+  overview.classList.add('open');
+  grid.querySelector(`[data-slide-id="${current}"]`)?.scrollIntoView({block:'center'});
+}
+
+const requestedPosition=Math.min(order.length-1,Math.max(0,(Number(location.hash.slice(1))||1)-1));
+current=hidden.has(order[requestedPosition])?visibleIds()[0]:order[requestedPosition];
+applyOrder();
+slideById.get(current).classList.add('active');
 renderCoverInfo();applyHiddenState();fitDeck();addEventListener('resize',fitDeck);
 
 deck.addEventListener('click',forward);
@@ -2081,6 +2301,8 @@ document.querySelector('#list').addEventListener('click',openOverview);
 document.querySelector('#edit-cover-info').addEventListener('click',openCoverEditor);
 document.querySelector('#fullscreen').addEventListener('click',toggleFullscreen);
 document.querySelector('#close-overview').addEventListener('click',closeOverview);
+editOrderButton.addEventListener('click',toggleReorderMode);
+resetOrderButton.addEventListener('click',resetOrder);
 editHiddenButton.addEventListener('click',toggleEditMode);
 resetHiddenButton.addEventListener('click',resetHidden);
 document.querySelector('#cancel-cover-info').addEventListener('click',closeCoverEditor);
@@ -2106,15 +2328,489 @@ document.addEventListener('keydown',event=>{
   }
   if(['Enter',' ','ArrowRight','PageDown'].includes(event.key)){event.preventDefault();forward()}
   else if(['ArrowLeft','PageUp','Backspace'].includes(event.key)){event.preventDefault();backward()}
-  else if(event.key==='Home'){event.preventDefault();show(visibleIndexes()[0],-1)}
-  else if(event.key==='End'){event.preventDefault();show(visibleIndexes().at(-1),1)}
+  else if(event.key==='Home'){event.preventDefault();show(visibleIds()[0],-1)}
+  else if(event.key==='End'){event.preventDefault();show(visibleIds().at(-1),1)}
   else if(event.key.toLowerCase()==='m'){event.preventDefault();openOverview()}
+  else if(event.key.toLowerCase()==='p'){event.preventDefault();document.querySelector('#manage-pages').click()}
   else if(event.key.toLowerCase()==='i'){event.preventDefault();openCoverEditor()}
   else if(event.key.toLowerCase()==='f'){event.preventDefault();toggleFullscreen()}
   else if(event.key.toLowerCase()==='h'){
-    showToast('Enter·Space·클릭 다음　← 이전　M 목록　I 표지 정보　F 전체 화면');
+    showToast('Enter·Space·클릭 다음　← 이전　M 목록　P 페이지 관리　I 표지 정보　F 전체 화면');
   }
 });
+</script>
+<script>
+const editPagesButton=document.querySelector('#edit-pages');
+const managePagesButton=document.querySelector('#manage-pages');
+const pageManagerLauncher=document.querySelector('#page-manager-launcher');
+const addPagesButton=document.querySelector('#add-pages');
+const restoreDeletedButton=document.querySelector('#restore-deleted');
+const saveEditedFileButton=document.querySelector('#save-edited-file');
+const addImagesInput=document.querySelector('#add-images-input');
+const DELETED_STORAGE_KEY='dongpae-admission-deleted-slides-v1-120';
+const CUSTOM_SLIDE_DB='dongpae-admission-custom-slides-v1';
+const CUSTOM_SLIDE_STORE='slides';
+let pageEditMode=false;
+let deleted=new Set();
+let slideDbPromise=null;
+const embeddedStateElement=document.querySelector('#embedded-page-state');
+let embeddedPageState={};
+try{embeddedPageState=JSON.parse(embeddedStateElement?.textContent||'{}')}catch(error){embeddedPageState={}}
+const exportCutoff=Number(document.querySelector('meta[name="dongpae-export-cutoff"]')?.content||0);
+
+function hasStoredKey(key){
+  try{return localStorage.getItem(key)!==null}catch(error){return false}
+}
+
+function activeIds(){return order.filter(id=>!deleted.has(id))}
+
+visibleIds=function(){return activeIds().filter(id=>!hidden.has(id))};
+
+sequenceNumber=function(id){return activeIds().indexOf(id)+1};
+
+function loadDeleted(){
+  try{
+    const saved=JSON.parse(localStorage.getItem(DELETED_STORAGE_KEY)||'[]');
+    const valid=Array.isArray(saved)?saved.filter(id=>Number.isInteger(id)&&slideById.has(id)):[];
+    return new Set(valid.length<baseSlides.length?valid:[]);
+  }catch(error){return new Set()}
+}
+
+function saveDeleted(){
+  try{localStorage.setItem(DELETED_STORAGE_KEY,JSON.stringify([...deleted]))}
+  catch(error){showToast('이 브라우저에서는 삭제 설정을 저장할 수 없습니다.')}
+}
+
+function openSlideDb(){
+  if(!('indexedDB' in window))return Promise.reject(new Error('IndexedDB unavailable'));
+  if(slideDbPromise)return slideDbPromise;
+  slideDbPromise=new Promise((resolve,reject)=>{
+    const request=indexedDB.open(CUSTOM_SLIDE_DB,1);
+    request.onupgradeneeded=()=>{
+      const db=request.result;
+      if(!db.objectStoreNames.contains(CUSTOM_SLIDE_STORE))db.createObjectStore(CUSTOM_SLIDE_STORE,{keyPath:'id'});
+    };
+    request.onsuccess=()=>resolve(request.result);
+    request.onerror=()=>reject(request.error||new Error('Database open failed'));
+    request.onblocked=()=>reject(new Error('Database blocked'));
+  });
+  return slideDbPromise;
+}
+
+async function loadCustomSlideRecords(){
+  try{
+    const db=await openSlideDb();
+    return await new Promise((resolve,reject)=>{
+      const request=db.transaction(CUSTOM_SLIDE_STORE,'readonly').objectStore(CUSTOM_SLIDE_STORE).getAll();
+      request.onsuccess=()=>resolve(request.result.sort((a,b)=>(a.createdAt||0)-(b.createdAt||0)));
+      request.onerror=()=>reject(request.error);
+    });
+  }catch(error){return []}
+}
+
+async function persistCustomSlide(record){
+  const db=await openSlideDb();
+  return new Promise((resolve,reject)=>{
+    const transaction=db.transaction(CUSTOM_SLIDE_STORE,'readwrite');
+    transaction.objectStore(CUSTOM_SLIDE_STORE).put(record);
+    transaction.oncomplete=()=>resolve();
+    transaction.onerror=()=>reject(transaction.error);
+    transaction.onabort=()=>reject(transaction.error||new Error('Database write aborted'));
+  });
+}
+
+function registerCustomSlide(record){
+  const id=Number(record.id);
+  if(!Number.isInteger(id)||slideById.has(id))return;
+  const template=baseSlides.at(-1);
+  const slide=template.cloneNode(true);
+  slide.className='slide';
+  slide.dataset.index='';
+  slide.dataset.slideId=String(id);
+  slide.dataset.title=record.title||'추가 이미지';
+  slide.dataset.custom='true';
+  slide.style.setProperty('--accent','#2f455c');
+  slide.removeAttribute('aria-hidden');
+  slide.querySelector('.standard-meta span:first-child').textContent='추가 페이지';
+  slide.querySelector('.section-no').textContent='+';
+  slide.querySelector('.section-name').textContent='추가 페이지';
+  slide.querySelector('.page-current').textContent='';
+  slide.querySelector('.page-total').textContent='';
+  const image=slide.querySelector('.source-slide img');
+  image.src=record.dataUrl;
+  image.alt=`추가 슬라이드 ${slide.dataset.title}`;
+  deck.append(slide);
+  baseSlides.push(slide);
+  slideById.set(id,slide);
+}
+
+applyOrder=function(){
+  const active=activeIds();
+  const total=active.length;
+  const positions=new Map(active.map((id,index)=>[id,index+1]));
+  order.forEach(id=>{
+    const slide=slideById.get(id);
+    if(!slide)return;
+    deck.append(slide);
+    const page=positions.get(id)||0;
+    const pageText=page?String(page).padStart(3,'0'):'—';
+    slide.dataset.index=page?String(page):'';
+    slide.querySelector('.standard-meta span:last-child').textContent=`${pageText} / ${total}`;
+    slide.querySelector('.page-current').textContent=pageText;
+    slide.querySelector('.page-total').textContent=`/ ${total}`;
+    slide.querySelector('.source-slide img').alt=page?`${page}번 슬라이드 ${slide.dataset.title}`:`삭제된 슬라이드 ${slide.dataset.title}`;
+    const item=grid.querySelector(`[data-slide-id="${id}"]`);
+    if(item){
+      item.querySelector('.item-label').innerHTML=`<b>${page?pageText:'삭제'}</b>${slide.dataset.title}`;
+      const deleteButton=item.querySelector('.delete-page');
+      if(deleteButton)deleteButton.textContent=deleted.has(id)?'페이지 복원':'페이지 삭제';
+      grid.append(item);
+    }
+  });
+  updateCounter();
+  updateProgress();
+  if(current!==null&&sequenceNumber(current)>0)history.replaceState(null,'',`#${sequenceNumber(current)}`);
+};
+
+updateProgress=function(){
+  const visible=visibleIds();
+  baseSlides.forEach(slide=>slide.querySelector('.page-progress i').style.width='0%');
+  visible.forEach((id,position)=>{
+    slideById.get(id).querySelector('.page-progress i').style.width=`${(position+1)/visible.length*100}%`;
+  });
+};
+
+applyHiddenState=function(){
+  baseSlides.forEach(slide=>{
+    const id=Number(slide.dataset.slideId);
+    const isHidden=hidden.has(id);
+    const isDeleted=deleted.has(id);
+    slide.classList.toggle('is-hidden',isHidden);
+    slide.classList.toggle('is-deleted',isDeleted);
+    slide.setAttribute('aria-hidden',String(isHidden||isDeleted));
+  });
+  baseSlides.forEach(slide=>slide.classList.remove('last-visible'));
+  const visible=visibleIds();
+  if(visible.length)slideById.get(visible.at(-1)).classList.add('last-visible');
+  [...grid.children].forEach(item=>{
+    const id=Number(item.dataset.slideId);
+    item.classList.toggle('is-hidden',hidden.has(id));
+    item.classList.toggle('is-deleted',deleted.has(id));
+    item.classList.toggle('is-custom',item.dataset.custom==='true');
+  });
+  updateCounter();
+  updateProgress();
+  restoreDeletedButton.hidden=deleted.size===0;
+  overviewTitle.textContent=pageEditMode?`페이지 추가·삭제 (${activeIds().length}쪽, ${deleted.size}쪽 삭제)`:reorderMode?`슬라이드 순서 편집 (${activeIds().length}쪽)`:editMode?`슬라이드 숨김 편집 (${hidden.size}쪽 숨김)`:`슬라이드 목록 (${visible.length}쪽)`;
+};
+
+show=function(id,direction=1,instant=false){
+  if(!slideById.has(id)||hidden.has(id)||deleted.has(id)||id===current||(!instant&&busy))return;
+  busy=!instant;
+  const previous=slideById.get(current);
+  const incoming=slideById.get(id);
+  if(!instant)previous.classList.add('leaving');
+  previous.classList.remove('active');
+  incoming.style.transform=instant?'none':`translateX(${direction>0?'10px':'-10px'})`;
+  requestAnimationFrame(()=>{incoming.classList.add('active');incoming.style.transform=''});
+  current=id;
+  updateCounter();
+  history.replaceState(null,'',`#${sequenceNumber(current)}`);
+  if(instant)busy=false;
+  else setTimeout(()=>{previous.classList.remove('leaving');busy=false},300);
+};
+
+nextVisible=function(fromId,direction){
+  const start=order.indexOf(fromId);
+  for(let position=start+direction;position>=0&&position<order.length;position+=direction){
+    const id=order[position];
+    if(!hidden.has(id)&&!deleted.has(id))return id;
+  }
+  return -1;
+};
+
+syncOverviewMode=function(){
+  overview.classList.toggle('editing',editMode);
+  overview.classList.toggle('reordering',reorderMode);
+  overview.classList.toggle('page-editing',pageEditMode);
+  editHiddenButton.classList.toggle('active',editMode);
+  editOrderButton.classList.toggle('active',reorderMode);
+  editPagesButton.classList.toggle('active',pageEditMode);
+  editHiddenButton.textContent=editMode?'편집 종료':'숨김 편집';
+  editOrderButton.textContent=reorderMode?'편집 종료':'순서 편집';
+  editPagesButton.textContent=pageEditMode?'편집 종료':'페이지 편집';
+  overviewNote.textContent=pageEditMode?'이미지를 추가하거나 각 썸네일의 삭제·복원 버튼을 사용합니다.':reorderMode?'끌어 놓거나 앞·뒤 버튼을 눌러 순서를 바꿉니다. 변경 내용은 자동 저장됩니다.':editMode?'화면을 선택하여 숨기거나 다시 표시합니다.':'화면을 선택하면 해당 슬라이드로 이동합니다.';
+  [...grid.children].forEach(item=>item.draggable=reorderMode&&!deleted.has(Number(item.dataset.slideId)));
+  applyHiddenState();
+};
+
+setEditMode=function(enabled){
+  editMode=enabled;
+  if(enabled){reorderMode=false;pageEditMode=false}
+  syncOverviewMode();
+};
+
+setReorderMode=function(enabled){
+  reorderMode=enabled;
+  if(enabled){editMode=false;pageEditMode=false}
+  syncOverviewMode();
+};
+
+setNormalMode=function(){
+  editMode=false;
+  reorderMode=false;
+  pageEditMode=false;
+  syncOverviewMode();
+};
+
+function setPageEditMode(enabled){
+  pageEditMode=enabled;
+  if(enabled){editMode=false;reorderMode=false}
+  syncOverviewMode();
+}
+
+function togglePageEditMode(){
+  if(pageEditMode){setPageEditMode(false);return}
+  const password=prompt('페이지 편집 비밀번호를 입력하세요.');
+  if(password===null)return;
+  if(password!==EDIT_PASSWORD){showToast('비밀번호가 올바르지 않습니다.');return}
+  setPageEditMode(true);
+  showToast('이미지 추가 또는 페이지 삭제·복원을 선택하세요.');
+}
+
+function openPageManager(){
+  const password=prompt('페이지 관리 비밀번호를 입력하세요.');
+  if(password===null)return;
+  if(password!==EDIT_PASSWORD){showToast('비밀번호가 올바르지 않습니다.');return}
+  ensureOverviewItems();
+  enhanceOverviewItems();
+  setPageEditMode(true);
+  overview.classList.add('open');
+  grid.querySelector(`[data-slide-id="${current}"]`)?.scrollIntoView({block:'center'});
+  showToast('이미지 추가 또는 페이지 삭제·복원을 선택하세요.');
+}
+
+moveBy=function(id,delta){
+  const active=activeIds();
+  const from=active.indexOf(id);
+  const to=from+delta;
+  if(from<0||to<0||to>=active.length){showToast(delta<0?'이미 첫 번째 화면입니다.':'이미 마지막 화면입니다.');return}
+  moveTo(id,active[to],delta>0);
+};
+
+function toggleDeletedPage(id){
+  const deleting=!deleted.has(id);
+  const oldPage=sequenceNumber(id);
+  if(deleting&&activeIds().length===1){showToast('마지막 페이지는 삭제할 수 없습니다.');return}
+  if(deleting)deleted.add(id);else deleted.delete(id);
+  if(deleting&&id===current){
+    let fallback=nextVisible(id,1);
+    if(fallback<0)fallback=nextVisible(id,-1);
+    if(fallback<0){
+      fallback=activeIds()[0];
+      hidden.delete(fallback);
+      saveHidden();
+    }
+    busy=false;
+    show(fallback,order.indexOf(fallback)>order.indexOf(id)?1:-1,true);
+  }
+  saveDeleted();
+  applyOrder();
+  applyHiddenState();
+  showToast(deleting?`${oldPage}번 페이지를 삭제했습니다.`:`페이지를 복원했습니다. 현재 위치는 ${sequenceNumber(id)}쪽입니다.`);
+}
+
+function restoreAllDeleted(){
+  if(!deleted.size){showToast('삭제된 페이지가 없습니다.');return}
+  if(!confirm('삭제한 페이지를 모두 복원할까요?'))return;
+  deleted.clear();
+  saveDeleted();
+  applyOrder();
+  applyHiddenState();
+  showToast('삭제한 페이지를 모두 복원했습니다.');
+}
+
+function enhanceOverviewItems(){
+  [...grid.children].forEach(item=>{
+    if(item.dataset.pageEditorReady==='true')return;
+    const id=Number(item.dataset.slideId);
+    const slide=slideById.get(id);
+    item.dataset.pageEditorReady='true';
+    item.dataset.custom=slide?.dataset.custom==='true'?'true':'false';
+    const deletedBadge=document.createElement('span');
+    deletedBadge.className='deleted-badge';
+    deletedBadge.textContent='삭제됨';
+    const customBadge=document.createElement('span');
+    customBadge.className='custom-badge';
+    customBadge.textContent='추가';
+    const pageControls=document.createElement('div');
+    pageControls.className='page-controls';
+    const deleteButton=document.createElement('button');
+    deleteButton.type='button';
+    deleteButton.className='delete-page';
+    deleteButton.textContent=deleted.has(id)?'페이지 복원':'페이지 삭제';
+    pageControls.append(deleteButton);
+    item.append(deletedBadge,customBadge,pageControls);
+    item.addEventListener('click',event=>{
+      if(pageEditMode&&!event.target.closest('.page-controls')){
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    },true);
+    item.addEventListener('keydown',event=>{
+      if(pageEditMode&&!event.target.closest('.page-controls')&&(event.key==='Enter'||event.key===' ')){
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    },true);
+    deleteButton.addEventListener('click',event=>{
+      event.preventDefault();
+      event.stopPropagation();
+      toggleDeletedPage(id);
+    });
+  });
+  applyOrder();
+  applyHiddenState();
+}
+
+function rebuildOverviewItems(){
+  if(!grid.children.length)return;
+  grid.textContent='';
+  ensureOverviewItems();
+  enhanceOverviewItems();
+  syncOverviewMode();
+}
+
+function fileToDataUrl(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(reader.result);
+    reader.onerror=()=>reject(reader.error||new Error('File read failed'));
+    reader.readAsDataURL(file);
+  });
+}
+
+function newCustomId(offset){
+  return Date.now()*1000+offset+Math.floor(Math.random()*900);
+}
+
+async function addImageFiles(fileList){
+  const files=[...fileList].filter(file=>file.type.startsWith('image/'));
+  if(!files.length){showToast('추가할 이미지 파일을 선택하세요.');return}
+  addPagesButton.disabled=true;
+  let added=0;
+  let persistenceFailed=false;
+  for(const [index,file] of files.entries()){
+    try{
+      const dataUrl=await fileToDataUrl(file);
+      let id=newCustomId(index);
+      while(slideById.has(id))id+=1;
+      const record={
+        id,
+        title:file.name.replace(/\.[^.]+$/,'')||'추가 이미지',
+        dataUrl,
+        createdAt:Date.now()+index
+      };
+      try{await persistCustomSlide(record)}catch(error){persistenceFailed=true}
+      registerCustomSlide(record);
+      order.push(id);
+      added+=1;
+    }catch(error){persistenceFailed=true}
+  }
+  addPagesButton.disabled=false;
+  addImagesInput.value='';
+  if(!added){showToast('이미지를 추가하지 못했습니다.');return}
+  saveOrder();
+  if(grid.children.length)rebuildOverviewItems();
+  else{applyOrder();applyHiddenState()}
+  showToast(persistenceFailed?`${added}쪽을 추가했습니다. 이 브라우저에서는 새로고침 후 유지되지 않을 수 있습니다.`:`${added}쪽을 마지막에 추가했습니다. 순서 편집으로 위치를 바꿀 수 있습니다.`);
+}
+
+function downloadEditedHtml(){
+  const clone=document.documentElement.cloneNode(true);
+  clone.querySelectorAll('.slide.is-deleted').forEach(slide=>slide.remove());
+  clone.querySelectorAll('.slide').forEach(slide=>{
+    slide.classList.remove('active','leaving','last-visible','is-hidden','is-deleted');
+    slide.removeAttribute('aria-hidden');
+    slide.style.removeProperty('transform');
+  });
+  const cloneGrid=clone.querySelector('#overview-grid');
+  if(cloneGrid)cloneGrid.textContent='';
+  clone.querySelector('#overview')?.classList.remove('open','editing','reordering','page-editing');
+  clone.querySelector('#cover-editor')?.classList.remove('open');
+  clone.querySelector('#toast')?.classList.remove('show');
+  clone.querySelector('#embedded-page-state')?.remove();
+  clone.querySelector('meta[name="dongpae-export-cutoff"]')?.remove();
+  const cutoff=document.createElement('meta');
+  cutoff.name='dongpae-export-cutoff';
+  cutoff.content=String(Date.now());
+  clone.querySelector('head').append(cutoff);
+  const state=document.createElement('script');
+  state.id='embedded-page-state';
+  state.type='application/json';
+  const keptIds=new Set(order.filter(id=>!deleted.has(id)));
+  const exportState={
+    hidden:[...hidden].filter(id=>keptIds.has(id)),
+    coverInfo
+  };
+  state.textContent=JSON.stringify(exportState).replace(/</g,'\\u003c');
+  clone.querySelector('head').append(state);
+  const blob=new Blob([`<!doctype html>\n${clone.outerHTML}`],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement('a');
+  link.href=url;
+  link.download='2027_동패고_입학설명회_수정본.html';
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  showToast('추가·삭제 내용을 포함한 수정본 HTML을 저장했습니다.');
+}
+
+async function initializePageEditor(){
+  let records=await loadCustomSlideRecords();
+  if(exportCutoff)records=records.filter(record=>slideById.has(Number(record.id))||Number(record.createdAt)>exportCutoff);
+  records.forEach(registerCustomSlide);
+  order=loadOrder();
+  hidden=loadHidden();
+  if(!hasStoredKey(STORAGE_KEY)&&Array.isArray(embeddedPageState.hidden)){
+    hidden=new Set(embeddedPageState.hidden.filter(id=>Number.isInteger(id)&&slideById.has(id)));
+  }
+  deleted=loadDeleted();
+  if(!hasStoredKey(COVER_INFO_KEY)&&embeddedPageState.coverInfo&&typeof embeddedPageState.coverInfo==='object'){
+    coverInfo={
+      title:typeof embeddedPageState.coverInfo.title==='string'?embeddedPageState.coverInfo.title:'',
+      place:typeof embeddedPageState.coverInfo.place==='string'?embeddedPageState.coverInfo.place:'',
+      schedule:typeof embeddedPageState.coverInfo.schedule==='string'?embeddedPageState.coverInfo.schedule:''
+    };
+    renderCoverInfo();
+  }
+  if(!activeIds().length){deleted.clear();saveDeleted()}
+  if(!visibleIds().length){
+    activeIds().forEach(id=>hidden.delete(id));
+    saveHidden();
+  }
+  baseSlides.forEach(slide=>slide.classList.remove('active','leaving'));
+  const requestedPosition=Math.min(activeIds().length-1,Math.max(0,(Number(location.hash.slice(1))||1)-1));
+  const requested=activeIds()[requestedPosition]??activeIds()[0];
+  current=hidden.has(requested)?visibleIds()[0]:requested;
+  applyOrder();
+  slideById.get(current)?.classList.add('active');
+  if(grid.children.length)rebuildOverviewItems();
+  applyHiddenState();
+}
+
+editPagesButton.addEventListener('click',togglePageEditMode);
+managePagesButton.addEventListener('click',openPageManager);
+pageManagerLauncher.addEventListener('click',openPageManager);
+addPagesButton.addEventListener('click',()=>addImagesInput.click());
+restoreDeletedButton.addEventListener('click',restoreAllDeleted);
+saveEditedFileButton.addEventListener('click',downloadEditedHtml);
+addImagesInput.addEventListener('change',()=>addImageFiles(addImagesInput.files));
+document.querySelector('#list').addEventListener('click',()=>setTimeout(()=>{enhanceOverviewItems();syncOverviewMode()},0));
+
+initializePageEditor();
+
 </script>
 </body>
 </html>
